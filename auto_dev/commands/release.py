@@ -59,11 +59,16 @@ class Releaser:
         """
         We run the post release.
         """
-        result = subprocess.run(['git', 'push', '--set-upstream', 'origin', f"heads/v{version}"], check=True, shell=True)
+        command = f"git push --set-upstream origin heads/v{version}"
+        self.logger.info(f"Run command:\n {command}")
+        result = subprocess.run(command.split(" "), check=True, shell=True)
         if not result.returncode == 0:
             self.logger.error("Failed to push the branch. 😭")
             return False
-        result = subprocess.run(['git', 'push', '--tags'], check=True)
+        command = "git push --tags"
+        self.logger.info(f"Run command:\n {command}")
+        result = subprocess.run(command.split(" "), check=True)
+
         if not result:
             self.logger.error("Failed to push the tag. 😭")
             return False
