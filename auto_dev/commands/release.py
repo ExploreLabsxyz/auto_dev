@@ -59,6 +59,27 @@ class Releaser:
         """
         We run the post release.
         """
+        if not self.is_repo_clean():
+            self.logger.error("Repo is not clean. 😭 We will not push!")
+            return False
+        cmd = "git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)".split(" ")
+        cli_tool = CommandExecutor(
+            command=cmd,
+        )
+        result = cli_tool.execute(verbose=True, stream=True)
+        if not result:
+            self.logger.error("Failed to push the branch. 😭")
+            return False
+        cmd = "git push --tags".split(" ")
+        cli_tool = CommandExecutor(
+            command=cmd,
+        )
+        result = cli_tool.execute(verbose=True, stream=True)
+        if not result:
+            self.logger.error("Failed to push the tag. 😭")
+            return False
+        return True
+
 
     def release(self):
         """
@@ -75,9 +96,7 @@ class Releaser:
         if not self.pre_release():
             self.logger.error("Pre release failed. 😭")
             return False
-        if not self.update_version(new_version):
-            self.logger.error("Update version failed. 😭")
-            return False
+        self.update_version(new_version):
         if not self.post_release():
             self.logger.error("Post release failed. 😭")
             return False
