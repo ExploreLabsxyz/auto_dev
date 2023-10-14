@@ -1,6 +1,7 @@
 """
 We release the package.
 """
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -59,9 +60,9 @@ class Releaser:
         """
         We run the post release.
         """
-        command = f"git push --set-upstream origin `heads/v{version}`"
+        command = f"git push --set-upstream origin heads/v{version}"
         self.logger.info(f"Run command:\n {command}")
-        result = subprocess.run(command.split(" "), check=True, shell=True)
+        result = subprocess.run(command.split(" "), check=True, shell=True, env=os.environ)
         if not result.returncode == 0:
             self.logger.error("Failed to push the branch. 😭")
             return False
