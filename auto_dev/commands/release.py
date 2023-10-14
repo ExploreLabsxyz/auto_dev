@@ -59,7 +59,7 @@ class Releaser:
         """
         We run the post release.
         """
-        result = subprocess.run(['git', 'push', '-u', 'origin', f"v{version}"], check=True)
+        result = subprocess.run(['git', 'push', '-u', '--set-upstream', 'origin', f"v{version}"], check=True)
         if not result.returncode == 0:
             self.logger.error("Failed to push the branch. 😭")
             return False
