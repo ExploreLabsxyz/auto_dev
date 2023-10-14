@@ -1,6 +1,7 @@
 """
 We release the package.
 """
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -89,8 +90,8 @@ class Releaser:
         """
         # we checkout to a new branch for the release
         self.logger.info("Running the pre release... 🚀")
-        if not self.check_tree_is_clean():
-            self.logger.error("Tree is not clean. 😭")
+        if not self.is_repo_clean():
+            self.logger.error("Repo is not clean. 😭 We will not release!")
             return False
         new_version = self.get_new_version()
         cli_tool = CommandExecutor(
@@ -98,16 +99,14 @@ class Releaser:
         )
         return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
 
-    def check_repo_is_clean(self):
+    def is_repo_clean(self):
         """
         We check the project is clean using a command to check if there are ANY changes.
         """
-        cmd = "git status --porcelain"
         self.logger.info("Checking the tree is clean... 🚀")
-        cli_tool = CommandExecutor(
-            command=cmd.split(" "),
-        )
-        return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
+        result = subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True, check=False)
+        # we check there are no changes
+        return result.stdout == ""
 
 
 cli = build_cli()
