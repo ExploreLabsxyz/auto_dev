@@ -62,7 +62,7 @@ class Releaser:
         """
         command = f"git push --set-upstream origin heads/v{version}"
         self.logger.info(f"Run command:\n {command}")
-        result = subprocess.run(command.split(" "), check=True, shell=True, env=os.environ)
+        result = subprocess.run(command, check=True, shell=True, env=os.environ)
         if not result.returncode == 0:
             self.logger.error("Failed to push the branch. 😭")
             return False
