@@ -96,7 +96,7 @@ class Releaser:
         if not self.pre_release():
             self.logger.error("Pre release failed. 😭")
             return False
-        self.update_version(new_version):
+        self.update_version(new_version)
         if not self.post_release():
             self.logger.error("Post release failed. 😭")
             return False
