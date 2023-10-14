@@ -55,14 +55,14 @@ class Releaser:
         )
         return cli_tool.execute(verbose=True, stream=True)
 
-    def post_release(self):
+    def post_release(self, version):
         """
         We run the post release.
         """
         if not self.is_repo_clean():
             self.logger.error("Repo is not clean. 😭 We will not push!")
             return False
-        cmd = "git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)".split(" ")
+        cmd = "git push --set-upstream origin {new_version}".split(" ")
         cli_tool = CommandExecutor(
             command=cmd,
         )
@@ -97,7 +97,7 @@ class Releaser:
             self.logger.error("Pre release failed. 😭")
             return False
         self.update_version(new_version)
-        if not self.post_release():
+        if not self.post_release(new_version):
             self.logger.error("Post release failed. 😭")
             return False
         self.logger.info(f"New version is {new_version} 🎉")
