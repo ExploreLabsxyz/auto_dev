@@ -116,7 +116,10 @@ class Releaser:
         cli_tool = CommandExecutor(
             command=f"git checkout -b v{new_version}".split(" "),
         )
-        return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
+        result = cli_tool.execute(verbose=True, stream=True)
+        if not result:
+            self.logger.error("Failed to create the branch. 😭")
+        return result
 
     def is_repo_clean(self):
         """
