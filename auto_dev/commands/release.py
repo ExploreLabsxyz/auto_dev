@@ -65,6 +65,7 @@ class Releaser:
         cmd = "git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)".split(" ")
         cli_tool = CommandExecutor(
             command=cmd,
+            shell=True,
         )
         result = cli_tool.execute(verbose=True, stream=True)
         if not result:
