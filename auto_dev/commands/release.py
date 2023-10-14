@@ -60,11 +60,9 @@ class Releaser:
         We run the post release.
         """
         cmd = f"git push --set-upstream origin heads/v{version}".split(" ")
-        cli_tool = CommandExecutor(
-            command=cmd,
-        )
-        result = cli_tool.execute(verbose=True, stream=True, shell=True)
-        if not result:
+        result = subprocess.run(cmd, capture_output=True, text=True, shell=True, check=True)
+
+        if not result.returncode == 0:
             self.logger.error("Failed to push the branch. 😭")
             return False
         cmd = "git push --tags".split(" ")
