@@ -47,11 +47,12 @@ class Releaser:
         We update the version.
         """
         command = f"bumpversion {self.dep_path} --new-version {new_version}"
+        self.logger.info(f"Running command:\n `{command}`")
 
         cli_tool = CommandExecutor(
             command=command.split(" "),
         )
-        return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
+        return cli_tool.execute(verbose=True, stream=True)
 
     def post_release(self):
         """
@@ -65,14 +66,13 @@ class Releaser:
         self.logger.info("Running the release... 🚀")
         self.logger.info(f"Current version is {self.current_version()}. 🚀")
         self.logger.info(f"New version will be {self.get_new_version()}. 🚀")
-        if not self.pre_release():
-            self.logger.error("Pre release failed. 😭")
-            return False
         new_version = self.get_new_version()
-
         confirmation = input(f"Are you sure you want to release {new_version}? [y/N]")
         if confirmation.lower() != "y":
             self.logger.info("Release aborted. 😎")
+            return False
+        if not self.pre_release():
+            self.logger.error("Pre release failed. 😭")
             return False
         if not self.update_version(new_version):
             self.logger.error("Update version failed. 😭")
@@ -88,9 +88,23 @@ class Releaser:
         We run the pre release.
         """
         # we checkout to a new branch for the release
+        self.logger.info("Running the pre release... 🚀")
+        if not self.check_tree_is_clean():
+            self.logger.error("Tree is not clean. 😭")
+            return False
         new_version = self.get_new_version()
         cli_tool = CommandExecutor(
             command=f"git checkout -b v{new_version}".split(" "),
+        )
+        return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
+
+    def check_tree_is_clean(self):
+        """
+        We check the tree is clean.
+        """
+        self.logger.info("Checking the tree is clean... 🚀")
+        cli_tool = CommandExecutor(
+            command=f"git status".split(" "),
         )
         return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
 
