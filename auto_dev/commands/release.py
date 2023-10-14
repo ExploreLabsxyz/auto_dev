@@ -100,11 +100,12 @@ class Releaser:
 
     def check_tree_is_clean(self):
         """
-        We check the tree is clean.
+        We check the tree is clean throwing an error if it is not.
         """
+        cmd = "git diff-index --quiet HEAD -- || (echo 'Tree is not clean' && exit 1)"
         self.logger.info("Checking the tree is clean... 🚀")
         cli_tool = CommandExecutor(
-            command=f"git status".split(" "),
+            command=cmd.split(" "),
         )
         return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
 
