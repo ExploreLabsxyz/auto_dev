@@ -46,11 +46,12 @@ class Releaser:
         """
         We update the version.
         """
-        with open(self.dep_path, "r", encoding=DEFAULT_ENCODING) as file_pointer:
-            data = toml.load(file_pointer)
-        data["tool"]["poetry"]["version"] = new_version
-        with open(self.dep_path, "w", encoding=DEFAULT_ENCODING) as file_pointer:
-            toml.dump(data, file_pointer)
+        command = f"bumpversion {self.dep_path} --new-version {new_version}"
+
+        cli_tool = CommandExecutor(
+            command=command.split(" "),
+        )
+        return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
 
     def post_release(self):
         """
@@ -68,6 +69,11 @@ class Releaser:
             self.logger.error("Pre release failed. 😭")
             return False
         new_version = self.get_new_version()
+
+        confirmation = input(f"Are you sure you want to release {new_version}? [y/N]")
+        if confirmation.lower() != "y":
+            self.logger.info("Release aborted. 😎")
+            return False
         if not self.update_version(new_version):
             self.logger.error("Update version failed. 😭")
             return False
