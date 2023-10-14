@@ -98,11 +98,11 @@ class Releaser:
         )
         return cli_tool.execute(verbose=self.verbose, stream=self.verbose)
 
-    def check_tree_is_clean(self):
+    def check_repo_is_clean(self):
         """
-        We check the tree is clean throwing an error if it is not.
+        We check the project is clean using a command to check if there are ANY changes.
         """
-        cmd = "git diff-index --quiet HEAD -- || (echo 'Tree is not clean' && exit 1)"
+        cmd = "git status --porcelain"
         self.logger.info("Checking the tree is clean... 🚀")
         cli_tool = CommandExecutor(
             command=cmd.split(" "),
