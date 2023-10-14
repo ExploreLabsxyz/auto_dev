@@ -65,9 +65,8 @@ class Releaser:
         cmd = "git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)".split(" ")
         cli_tool = CommandExecutor(
             command=cmd,
-            shell=True,
         )
-        result = cli_tool.execute(verbose=True, stream=True)
+        result = cli_tool.execute(verbose=True, stream=True, shell=True)
         if not result:
             self.logger.error("Failed to push the branch. 😭")
             return False
