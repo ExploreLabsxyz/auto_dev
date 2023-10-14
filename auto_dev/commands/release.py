@@ -59,10 +59,7 @@ class Releaser:
         """
         We run the post release.
         """
-        if not self.is_repo_clean():
-            self.logger.error("Repo is not clean. 😭 We will not push!")
-            return False
-        cmd = "git push --set-upstream origin {new_version}".split(" ")
+        cmd = f"git push --set-upstream origin heads/v{version}".split(" ")
         cli_tool = CommandExecutor(
             command=cmd,
         )
