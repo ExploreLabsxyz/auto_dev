@@ -11,6 +11,8 @@ from auto_dev.constants import DEFAULT_ENCODING
 from auto_dev.utils import change_dir, get_logger
 
 HTTP_PROTOCOL = "eightballer/http:0.1.0:bafybeihmhy6ax5uyjt7yxppn4viqswibcs5lsjhl3kvrsesorqe2u44jcm"
+HTTP_CLIENT_CONNECTION = "eightballer/http_client:0.1.0:bafybeidykl4elwbcjkqn32wt5h4h7tlpeqovrcq3c5bcplt6nhpznhgczi"
+HTTP_SERVER_CONNECTION = "eightballer/http_server:0.1.0:bafybeic5m2px4wanaqjc6jc3ileqmc76k2loitjrsmlffqvafx7bznwrba"
 
 HANDLER_HEADER_TEMPLATE = """
 # -*- coding: utf-8 -*-
@@ -225,8 +227,15 @@ class HandlerScaffolder:
     def scaffold(self):
         """Scaffold the handler."""
 
+        check_result, error = self.check_http_connections()
+        if error:
+            self.logger.warning(error)
+
         if not self.present_actions():
             return
+
+        if check_result:
+            self.add_or_replace_http_connections(check_result)
 
         if self.config.new_skill:
             self.create_new_skill()
@@ -241,6 +250,7 @@ class HandlerScaffolder:
             self.create_dialogues()
 
         self.fingerprint()
+        breakpoint()
         self.aea_install()
         self.add_protocol()
 
@@ -413,29 +423,97 @@ class HandlerScaffolder:
         response = input(f"{message} (y/n): ").lower().strip()
         return response in ('y', 'yes')
 
+    def check_http_connections(self):
+        """Check if the HTTP client and server connections are present and return the status."""
+        aea_config_path = Path("aea-config.yaml")
+        if not aea_config_path.exists():
+            return None, "aea-config.yaml not found."
+
+        with open(aea_config_path, "r", encoding=DEFAULT_ENCODING) as f:
+            aea_config = yaml.safe_load(f)
+        
+        connections = aea_config.get("connections", [])
+
+        missing_connections = []
+        other_http_connections = []
+
+        for connection in [HTTP_CLIENT_CONNECTION, HTTP_SERVER_CONNECTION]:
+            if connection not in connections:
+                missing_connections.append(connection)
+        
+        other_http_connections = [
+            conn for conn in connections
+            if "http_client" in conn or "http_server" in conn
+            and not conn.startswith("eightballer/")
+        ]
+
+        return {
+            "missing_connections": missing_connections,
+            "other_http_connections": other_http_connections,
+            "aea_config": aea_config,
+            "aea_config_path": aea_config_path,
+        }, None
+
+    def add_or_replace_http_connections(self, check_result):
+        """Add missing connections and replace non-eightballer HTTP connections."""
+        aea_config = check_result["aea_config"]
+        connections = aea_config.get("connections", [])
+        changes_made = False
+
+        for connection in check_result["missing_connections"]:
+            connections.append(connection)
+            changes_made = True
+            self.logger.info(f"Added {connection} to connections.")
+
+        if check_result["other_http_connections"]:
+            connections = [conn for conn in connections if conn not in check_result["other_http_connections"]]
+            connections.extend([HTTP_CLIENT_CONNECTION, HTTP_SERVER_CONNECTION])
+            changes_made = True
+            self.logger.info("Replaced non-eightballer HTTP connections with eightballer versions.")
+
+        if changes_made:
+            aea_config["connections"] = connections
+            with open(check_result["aea_config_path"], "w", encoding=DEFAULT_ENCODING) as f:
+                yaml.safe_dump(aea_config, f, sort_keys=False)
+            self.logger.info("Updated aea-config.yaml with new connections.")
+        else:
+            self.logger.info("No changes needed for HTTP connections.")
+
     def present_actions(self):
         """Present the scaffold summary"""
         actions = [
-            f"Generating handler based on OpenAPI spec: {self.config.spec_file_path}",
-            f"Saving handler to: skills/{self.config.output}/handlers.py",
-            f"Updating skill.yaml in skills/{self.config.output}/",
-            f"Moving and updating my_model.py to strategy.py in: skills/{self.config.output}/",
-            f"Removing behaviours.py in: skills/{self.config.output}/",
-            f"Creating dialogues.py in: skills/{self.config.output}/",
-            "Fingerprinting the skill",
-            "Running 'aea install'",
-            f"Adding HTTP protocol: {HTTP_PROTOCOL}",
+            f"Generate handler based on OpenAPI spec: {self.config.spec_file_path}",
+            f"Save handler to: skills/{self.config.output}/handlers.py",
+            f"Update skill.yaml in skills/{self.config.output}/",
+            f"Move and update my_model.py to strategy.py in: skills/{self.config.output}/",
+            f"Remove behaviours.py in: skills/{self.config.output}/",
+            f"Create dialogues.py in: skills/{self.config.output}/",
+            "Fingerprint the skill",
+            "Run 'aea install'",
+            f"Add HTTP protocol: {HTTP_PROTOCOL}",
         ]
 
         if self.config.new_skill:
-            actions.insert(0, f"Creating new skill: {self.config.output}")
+            actions.insert(0, f"Create new skill: {self.config.output}")
+
+        check_result, error = self.check_http_connections()
+        if error:
+            self.logger.warning(error)
+        elif check_result:
+            if check_result["missing_connections"]:
+                missing_conn_str = "\n    - " + "\n    - ".join(check_result['missing_connections'])
+                actions.append(f"Add missing HTTP connections:{missing_conn_str}")
+            
+            if check_result["other_http_connections"]:
+                replace_conn_str = "\n    - " + "\n    - ".join(check_result['other_http_connections'])
+                actions.append(f"Replace non-eightballer HTTP connections:{replace_conn_str}\n  with:\n    - {HTTP_CLIENT_CONNECTION}\n    - {HTTP_SERVER_CONNECTION}")
 
         self.logger.info("The following actions will be performed:")
         for i, action in enumerate(actions, 1):
             self.logger.info(f"{i}. {action}")
 
         if not self.config.auto_confirm:
-            confirm = input("Do you want to proceed? (y/n): ").lower().strip()
+            confirm = input("\nDo you want to proceed? (y/n): ").lower().strip()
             if confirm not in ('y', 'yes'):
                 self.logger.info("Scaffolding cancelled.")
                 return False
