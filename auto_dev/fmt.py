@@ -4,6 +4,8 @@ Module to format the code.
 
 from multiprocessing import Pool
 
+import isort
+import isort.files
 import requests
 from rich.progress import track
 
@@ -74,16 +76,8 @@ class Formatter:
     @staticmethod
     def run_isort(path, verbose=False):
         """Run isort on the path."""
-        command = CommandExecutor(
-            [
-                "poetry",
-                "run",
-                "isort",
-                str(path),
-            ]
-        )
-        result = command.execute(verbose=verbose)
-        return result
+        changed = isort.file(str(path))
+        return not changed
 
     @staticmethod
     def run_autoflake8(path, verbose=False):
