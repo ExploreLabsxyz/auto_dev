@@ -4,9 +4,11 @@
 from pathlib import Path
 
 import yaml
+import uuid
+import shutil
 from aea.configurations.base import PublicId
 
-from auto_dev.utils import change_dir, get_logger
+from auto_dev.utils import change_dir, get_logger, isolated_filesystem
 from auto_dev.constants import DEFAULT_ENCODING
 from auto_dev.cli_executor import CommandExecutor
 from auto_dev.commands.metadata import read_yaml_file
@@ -203,7 +205,8 @@ class ScaffolderConfig:
         self.verbose = verbose
         self.spec_file_path = spec_file_path
         self.author = public_id.author
-        self.output = public_id.name
+        self.name = public_id.name
+        self.path = Path.cwd() / "packages" / self.author / "skills" / self.name
         self.verbose = verbose
         self.new_skill = new_skill
         self.auto_confirm = auto_confirm
@@ -237,7 +240,7 @@ class HandlerScaffolder:
         self.generate_handler()
 
         with self._change_dir():
-            self.save_handler(self.config.output / Path("handlers.py"))
+            self.save_handler(self.config.name / Path("handlers.py"))
             self.update_skill_yaml(Path("skill.yaml"))
             self.move_and_update_my_model()
             self.remove_behaviours()
@@ -248,22 +251,53 @@ class HandlerScaffolder:
         self.add_protocol()
 
     def _change_dir(self):
-        return change_dir(Path("skills") / self.config.output)
+        return change_dir(Path("skills") / self.config.name)
 
     def create_new_skill(self) -> None:
         """Create a new skill."""
-        skill_cmd = f"aea scaffold skill {self.config.output}".split(" ")
-        if not CommandExecutor(skill_cmd).execute(verbose=self.config.verbose):
-            msg = "Failed to scaffold skill."
+        init_cmd = f"aea init --author {self.config.author} --reset --ipfs --remote".split(" ")
+        if not CommandExecutor(init_cmd).execute(verbose=self.config.verbose):
+            msg = "Failed to initialise aea."
             raise ValueError(msg)
+        
+        temp_agent_name = f"temp_agent_{uuid.uuid4().hex[:8]}"
+
+        with isolated_filesystem():
+            create_cmd = f"aea create {temp_agent_name}".split(" ")
+            if not CommandExecutor(create_cmd).execute(verbose=self.config.verbose):
+                msg = "Failed to create agent."
+                raise ValueError(msg)
+            change_dir(Path(temp_agent_name))
+            
+            create_skill_cmd = f"aea scaffold skill {self.config.name}".split(" ")
+            if not CommandExecutor(create_skill_cmd).execute(verbose=self.config.verbose):
+                msg = "Failed to scaffold skill."
+                raise ValueError(msg)
+
+            if not self.config.path.parent.exists():
+                self.config.path.parent.mkdir(parents=True)
+            try:
+                shutil.copytree(
+                    f"skills/{self.config.name}",
+                self.config.path,
+                    ignore=shutil.ignore_patterns("*.pyc", "__pycache__")
+                )
+            except shutil.Error as e:
+                self.logger.error(f"Error copying skill: {e}")
+                raise e
+            except shutil.Warning as w:
+                self.logger.warning(f"Warning copying skill: {w}")
+                raise w
+
+
 
     def generate_handler(self) -> None:
         """Generate handler."""
 
         if not self.config.new_skill:
-            skill_path = Path("skills") / self.config.output
+            skill_path = Path("skills") / self.config.name
             if not skill_path.exists():
-                self.logger.warning(f"Skill '{self.config.output}' not found in the 'skills' directory. Exiting.")
+                self.logger.warning(f"Skill '{self.config.name}' not found in the 'skills' directory. Exiting.")
 
         openapi_spec = read_yaml_file(self.config.spec_file_path)
         handler_methods = []
@@ -298,7 +332,7 @@ class HandlerScaffolder:
         all_methods: str = "\n".join(handler_methods)
 
         self.handler_code: str = HANDLER_HEADER_TEMPLATE.format(
-            author=self.config.author, skill_name=self.config.output
+            author=self.config.author, skill_name=self.config.name
         )
         main_handler: str = MAIN_HANDLER_TEMPLATE.format(
             all_methods=all_methods, unexpected_message_handler=UNEXPECTED_MESSAGE_HANDLER_TEMPLATE
@@ -382,7 +416,7 @@ class HandlerScaffolder:
         """
         Fingerprint the skill
         """
-        skill_id = PublicId(self.config.author, self.config.output, "0.1.0")
+        skill_id = PublicId(self.config.author, self.config.name, "0.1.0")
         cli_executor = CommandExecutor(f"aea fingerprint skill {skill_id}".split())
         result = cli_executor.execute(verbose=True)
         if not result:
@@ -415,18 +449,18 @@ class HandlerScaffolder:
         """Present the scaffold summary"""
         actions = [
             f"Generating handler based on OpenAPI spec: {self.config.spec_file_path}",
-            f"Saving handler to: skills/{self.config.output}/handlers.py",
-            f"Updating skill.yaml in skills/{self.config.output}/",
-            f"Moving and updating my_model.py to strategy.py in: skills/{self.config.output}/",
-            f"Removing behaviours.py in: skills/{self.config.output}/",
-            f"Creating dialogues.py in: skills/{self.config.output}/",
+            f"Saving handler to: skills/{self.config.name}/handlers.py",
+            f"Updating skill.yaml in skills/{self.config.name}/",
+            f"Moving and updating my_model.py to strategy.py in: skills/{self.config.name}/",
+            f"Removing behaviours.py in: skills/{self.config.name}/",
+            f"Creating dialogues.py in: skills/{self.config.name}/",
             "Fingerprinting the skill",
             "Running 'aea install'",
             f"Adding HTTP protocol: {HTTP_PROTOCOL}",
         ]
 
         if self.config.new_skill:
-            actions.insert(0, f"Creating new skill: {self.config.output}")
+            actions.insert(0, f"Creating new skill: {self.config.name}")
 
         self.logger.info("The following actions will be performed:")
         for i, action in enumerate(actions, 1):
