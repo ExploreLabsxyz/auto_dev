@@ -1,8 +1,8 @@
 """Group to implement improvements."""
 
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 from urllib.parse import urlparse
 
 import rich_click as click
@@ -16,10 +16,11 @@ cli = build_cli()
 
 
 def get_remote_owner():
+    """Get the remote owner of the repo."""
     try:
         remote_url = subprocess.check_output(["git", "config", "--get", "remote.origin.url"]).decode().strip()
         parsed_url = urlparse(remote_url)
-        path_parts = parsed_url.path.strip('/').split('/')
+        path_parts = parsed_url.path.strip("/").split("/")
         return path_parts[-2]
     except subprocess.CalledProcessError:
         return None
@@ -69,7 +70,6 @@ def improve(ctx, path, type_of_repo, author, name, yes) -> None:
     logger = ctx.obj["LOGGER"]
     remote = ctx.obj["REMOTE"]
     logger.info(f"Remote: {remote}")
-
 
     remote_owner = get_remote_owner()
     if remote_owner:
