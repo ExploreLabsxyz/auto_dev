@@ -22,7 +22,7 @@
 If you're looking to contribute or develop with `{project_name}`, get the source code and set up the environment:
 
 ```shell
-git clone https://github.com/{author}/{project_name}
+git clone https://github.com/{git_owner}/{project_name}
 cd {project_name}
 make install
 ```

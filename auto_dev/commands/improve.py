@@ -2,6 +2,8 @@
 
 import os
 from pathlib import Path
+import subprocess
+from urllib.parse import urlparse
 
 import rich_click as click
 
@@ -11,6 +13,16 @@ from auto_dev.commands.repo import TEMPLATES, RepoScaffolder
 
 
 cli = build_cli()
+
+
+def get_remote_owner():
+    try:
+        remote_url = subprocess.check_output(["git", "config", "--get", "remote.origin.url"]).decode().strip()
+        parsed_url = urlparse(remote_url)
+        path_parts = parsed_url.path.strip('/').split('/')
+        return path_parts[-2]
+    except subprocess.CalledProcessError:
+        return None
 
 
 @cli.command()
@@ -57,17 +69,30 @@ def improve(ctx, path, type_of_repo, author, name, yes) -> None:
     logger = ctx.obj["LOGGER"]
     remote = ctx.obj["REMOTE"]
     logger.info(f"Remote: {remote}")
+
+
+    remote_owner = get_remote_owner()
+    if remote_owner:
+        logger.info(f"Repo owner found: {remote_owner}")
+    else:
+        logger.warning("Could not determine remote owner. Using provided author.")
+        remote_owner = author
+
     scaffolder = RepoScaffolder(
         type_of_repo=type_of_repo,
         logger=logger,
         verbose=verbose,
-        render_overrides={"author": author, "project_name": name},
+        render_overrides={
+            "author": author,
+            "project_name": name,
+            "git_owner": remote_owner
+        },
     )
     results = scaffolder.verify(True, yes=yes)
     failed = results.count(CheckResult.FAIL)
     modified = results.count(CheckResult.MODIFIED)
     logger.info(f"""Verification completed with results:
-        Pased:    - {results.count(CheckResult.PASS)}
+        Passed:   - {results.count(CheckResult.PASS)}
         Failed:   - {failed}
         Modified: - {modified}
         Skipped:  - {results.count(CheckResult.SKIPPED)}
