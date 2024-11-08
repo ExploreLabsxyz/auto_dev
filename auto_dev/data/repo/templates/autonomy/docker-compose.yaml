@@ -24,6 +24,7 @@ services:
       - 8080:8080
       - 26656:26656
       - 26657:26657
+    network_mode: 'host'
     extra_hosts:
       - "host.docker.internal:host-gateway" 
     volumes:
