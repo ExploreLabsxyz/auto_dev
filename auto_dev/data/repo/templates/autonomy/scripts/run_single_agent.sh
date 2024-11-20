@@ -48,7 +48,7 @@ agent_name=$(echo "$AGENT_IDENTIFIER" | cut -d'/' -f2)
 echo "   Agent author: $agent_author"
 echo "   Agent name:   $agent_name"
 
-# Define build directory
+CWD=$(pwd)
 BUILD_DIR="build"
 AGENT_BUILD_DIR="$BUILD_DIR/$agent_author/$agent_name"
 
@@ -82,13 +82,13 @@ cd "$AGENT_BUILD_DIR"
 
 # create and add a new ethereum key
 echo "Setting up Ethereum key..."
-if [[ ! -f "../ethereum_private_key.txt" ]]; then
+if [[ ! -f "$CWD/ethereum_private_key.txt" ]]; then
     if ! aea -s generate-key ethereum || ! aea -s add-key ethereum; then
         echo "Error: Failed to generate or add Ethereum key."
         exit 1
     fi
 else
-    cp "../ethereum_private_key.txt" "./ethereum_private_key.txt"
+    cp "$CWD/ethereum_private_key.txt" "./ethereum_private_key.txt"
     if ! aea -s add-key ethereum; then
         echo "Error: Failed to add Ethereum key."
         exit 1
@@ -103,14 +103,15 @@ if ! aea -s install; then
 fi
 
 # issue certificates for agent peer-to-peer communications
-if [[ ! -d "../certs" ]]; then
+if [[ ! -d "$CWD/certs" ]]; then
     echo "Issuing certificates for agent peer-to-peer communications..."
     if ! aea -s issue-certificates; then
         echo "Error: Failed to issue certificates."
         exit 1
     fi
 else
-    cp -r ../certs ./
+    echo "Copying certificates from the parent directory..."
+    cp -r "$CWD/certs" ./.certs
 fi
 
 # Wait for the Tendermint node to start
@@ -133,18 +134,19 @@ if [[ "$tm_started" == false ]]; then
     exit 1
 fi
 
-# Start the agent
 echo "Starting the agent..."
+
+# Build the command
+cmd="aea -s"
 if [[ "$DEBUG" == true ]]; then
-    if ! aea -s -v DEBUG run --env "../.env"; then  
-        echo "Error: Failed to start the agent in DEBUG mode."
-        exit 1
-    fi
-else
-    if ! aea -s run --env "../.env"; then
-        echo "Error: Failed to start the agent."
-        exit 1
-    fi
+    cmd="$cmd -v DEBUG"
+fi
+cmd="$cmd run --env '../.env'"
+
+# Execute the command
+if ! eval "$cmd"; then
+    echo "Error: Failed to start the agent."
+    exit 1
 fi
 
 echo "Agent started successfully."
