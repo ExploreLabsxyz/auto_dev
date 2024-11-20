@@ -2,7 +2,7 @@
 set -e 
 
 # Run lock command and store potential changes
-autonomy packages lock
+poetry run autonomy packages lock
 
 # Check for changes before proceeding
 if [ -n "$(git status --porcelain packages/packages.json)" ]; then
@@ -10,6 +10,6 @@ if [ -n "$(git status --porcelain packages/packages.json)" ]; then
     exit 1
 fi
 
-make clean-pyc && autonomy push-all
+make clean-pyc && poetry run autonomy push-all
 
 echo "Pre-push hook completed successfully."
