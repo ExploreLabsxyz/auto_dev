@@ -1,6 +1,9 @@
 #! /bin/bash
 set -e
 
+CWD=$(pwd)
+BUILD_DIR="build"
+
 if [[ "$#" -lt 1 ]]; then
     echo "Usage: $0 <author/agent_name> [--force] [--debug]"
     echo "  <author/agent_name>: Identifier for the agent (e.g., eightballer/donation_station)"
@@ -48,8 +51,6 @@ agent_name=$(echo "$AGENT_IDENTIFIER" | cut -d'/' -f2)
 echo "   Agent author: $agent_author"
 echo "   Agent name:   $agent_name"
 
-CWD=$(pwd)
-BUILD_DIR="build"
 AGENT_BUILD_DIR="$BUILD_DIR/$agent_author/$agent_name"
 
 # Handle existing build directory
