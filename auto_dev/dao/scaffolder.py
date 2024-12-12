@@ -51,13 +51,19 @@ class DAOScaffolder:
                 self.logger.info("Found schemas with x-persistent tag:")
                 for schema in persistent_schemas:
                     self.logger.info(f"  - {schema}")
-                user_input = input("Use these x-persistent schemas for scaffolding? (y/n): ").lower().strip()
+                if self.auto_confirm:
+                    user_input = "y"
+                else:
+                    user_input = input("Use these x-persistent schemas for scaffolding? (y/n): ").lower().strip()
             else:
                 persistent_schemas = self.identify_persistent_schemas(api_spec)
                 self.logger.info("Identified persistent schemas:")
                 for schema in persistent_schemas:
                     self.logger.info(f"  - {schema}")
-                user_input = input("Use these identified persistent schemas for scaffolding? (y/n): ").lower().strip()
+                if self.auto_confirm:
+                    user_input = "y"
+                else:
+                    user_input = input("Use these identified persistent schemas for scaffolding? (y/n): ").lower().strip()
 
             if user_input != "y":
                 self.logger.info("Exiting scaffolding process.")
