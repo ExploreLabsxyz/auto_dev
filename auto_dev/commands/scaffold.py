@@ -343,6 +343,15 @@ def dao(ctx, auto_confirm) -> None:
     logger = ctx.obj["LOGGER"]
     verbose = ctx.obj["VERBOSE"]
 
+    dao_dir = Path.cwd() / "daos"
+    if (
+        dao_dir.exists()
+        and not auto_confirm
+        and not click.confirm("DAOs directory already exists. Do you want to overwrite it?")
+    ):
+        logger.info("Aborting DAO scaffolding.")
+        return
+
     try:
         scaffolder = DAOScaffolder(logger, verbose, auto_confirm)
         scaffolder.scaffold()
