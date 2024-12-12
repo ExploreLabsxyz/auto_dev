@@ -70,9 +70,32 @@ adev scaffold contract 0xc939df369C0Fc240C975A6dEEEE77d87bCFaC259 beyond_pricer 
 
 ## Installation
 
+*Install Python 3.10*
+- if on mac
 ```bash
-pip install autonomy-dev[all]
+brew install python@3.10
+export PATH="/opt/homebrew/opt/python@3.10/bin:$PATH"
+alias python=/opt/homebrew/opt/python@3.10/bin/python3.10
+alias pip=/opt/homebrew/opt/python@3.10/bin/pip3.10
+source ~/.zshrc
 ```
+```bash
+pip install 'autonomy-dev[all]'
+```
+
+## Quickstart
+*Set up venv*
+```bash
+/opt/homebrew/opt/python@3.10/bin/python3.10 -m venv autonomy-venv
+source autonomy-venv/bin/activate
+Pip install 'autonomy-dev[all]'
+Adev repo scaffold -t autonomy YOUR_PROJECT
+Cd FUN_HACK
+Adev create NEW_AGENT -t eightballer/frontend_agent --publish 
+Bash scripts/run_single_agent.sh your_name/NEW_AGENT
+```
+
+
 ## Release
 
 ```bash
