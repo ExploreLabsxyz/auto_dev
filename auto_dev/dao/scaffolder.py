@@ -63,7 +63,9 @@ class DAOScaffolder:
                 if self.auto_confirm:
                     user_input = "y"
                 else:
-                    user_input = input("Use these identified persistent schemas for scaffolding? (y/n): ").lower().strip()
+                    user_input = (
+                        input("Use these identified persistent schemas for scaffolding? (y/n): ").lower().strip()
+                    )
 
             if user_input != "y":
                 self.logger.info("Exiting scaffolding process.")
