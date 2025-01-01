@@ -26,6 +26,16 @@ yes 'third_party' | autonomy packages lock
 
 ```
 
+## Documentation
+
+For detailed information about using auto_dev, check out our documentation:
+
+- [Installation Guide](docs/installation.md) - Complete setup instructions and environment configuration
+- [Usage Guide](docs/usage.md) - Detailed examples and common workflows
+- [CLI Reference](docs/commands/index.md) - Comprehensive command-line interface documentation
+
+For development setup and contribution guidelines, see the [Installation Guide](docs/installation.md#development-setup).
+
 ```bash
 # run the agent and verify the endpoint
 
