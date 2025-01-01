@@ -10,6 +10,19 @@ $ pip install autonomy-dev[all]
 
 This installs the latest stable release with all optional dependencies.
 
+### Quick Start Example
+
+```bash
+# Create a repo & a simple webserver agent
+adev repo scaffold fun_new_hack && \
+cd fun_new_hack && \
+adev create author/cool_agent \
+    -t eightballer/frontend_agent # type of template to use
+
+# Sync to the local registry
+yes 'third_party' | autonomy packages lock
+```
+
 ## Development Setup
 
 For developers who want to contribute or modify the code:
@@ -59,8 +72,40 @@ The repository uses several development tools:
 
 1. **Poetry** for dependency management
 2. **pre-commit** for code quality checks
-3. **pytest** for testing
+3. **pytest** for testing (current coverage: ~35%)
 4. **mkdocs** for documentation
+
+### Environment Variables
+
+Some features require environment variables:
+
+1. **Block Explorer Integration**:
+   ```bash
+   export BLOCK_EXPLORER_API_KEY=your_api_key
+   # Optional: Custom block explorer URL
+   export BLOCK_EXPLORER_URL="https://api-goerli.arbiscan.io"
+   ```
+
+### Development Commands
+
+```bash
+# Format code
+poetry run adev -n 0 fmt -p . -co
+
+# Lint code
+poetry run adev -v -n 0 lint -p . -co
+
+# Run tests
+poetry run adev -v test -p tests
+
+# Test specific components
+adev test -p packages/eightballer/protocols/balances
+
+# Release process
+git checkout main
+git pull
+adev release
+```
 
 ## Troubleshooting
 

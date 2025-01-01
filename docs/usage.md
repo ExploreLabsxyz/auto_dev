@@ -45,6 +45,32 @@ This guide will help you get started with auto_dev quickly.
    adev create -t eightballer/frontend_agent my_author/my_agent
    ```
 
+2. Scaffold Protocol Components:
+   ```bash
+   # Create a temporary agent
+   adev create author/tmp_agent_name -t eightballer/base --force
+   cd tmp_agent_name
+   
+   # Generate protocol from spec
+   adev scaffold protocol ../specs/protocols/balances.yaml
+   
+   # Publish to registry
+   aea -s publish --push-missing
+   ```
+
+3. Scaffold Contract Components:
+   ```bash
+   # Generate contract from address
+   adev scaffold contract 0xc939df369C0Fc240C975A6dEEEE77d87bCFaC259 contract_name \
+         --block-explorer-api-key $BLOCK_EXPLORER_API_KEY \
+         --block-explorer-url "https://api-goerli.arbiscan.io"
+   ```
+
+   This creates:
+   - Open-AEA contract component class
+   - Contract component function generation (in progress)
+   - Contract component test generation (in progress)
+
 ### Managing Dependencies
 
 1. Update dependencies:
