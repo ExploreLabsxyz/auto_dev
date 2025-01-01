@@ -33,7 +33,8 @@ class BlockExplorer:
         """Get the abi for the contract at the address."""
         web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
         check_address = web3.to_checksum_address(address)
-        url = self.url + "/api?module=contract&action=getabi&address=" + str(check_address)
+        base = self.url.replace('/api', '').rstrip('/')
+        url = f"{base}/api?module=contract&action=getabi&address={str(check_address)}"
         response = self._authenticated_request(url)
         if response.status_code != 200:
             msg = f"Failed to get abi with api response error result `{response.status_code}`"
