@@ -56,7 +56,9 @@ class Contract:
         self.name = name
         self.abi = abi
         self.address = address
+        # Store files in contracts/ but maintain package imports for sys.path compatibility
         self.path = Path.cwd() / "contracts" / self.name
+        self.package_path = f"packages.{self.author}.contracts.{self.name}"
         self.web3 = web3 if web3 is not None else Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
     def write_abi_to_file(self) -> None:
@@ -104,7 +106,7 @@ class Contract:
         )
         contract_py = contract_py.replace(
             "from aea.configurations.base import PublicId",
-            f"from contracts.{self.name} import PUBLIC_ID",
+            f"from {self.package_path} import PUBLIC_ID",
         )
 
         contract_py = contract_py.replace(
