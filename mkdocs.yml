@@ -1,7 +1,7 @@
 site_name: auto_dev
-site_url: https://8ball030.github.io/auto_dev
-repo_url: https://github.com/8ball030/auto_dev
-repo_name: 8ball030/auto_dev
+site_url: https://explorelabsxyz.github.io/auto_dev
+repo_url: https://github.com/ExploreLabsxyz/auto_dev
+repo_name: ExploreLabsxyz/auto_dev
 #strict: true
 nav:
   - Home: index.md
@@ -119,13 +119,13 @@ extra:
     og:title: "auto_dev – Autonomy Dev Tooling"
     og:description: "Tooling to speed up open-autonomy development. Comprehensive toolkit for automating open-autonomy development workflows."
     og:type: "website"
-    og:url: "https://8ball030.github.io/auto_dev"
+    og:url: "https://explorelabsxyz.github.io/auto_dev"
     twitter:card: "summary"
     twitter:title: "auto_dev – Autonomy Dev Tooling"
     twitter:description: "Tooling to speed up open-autonomy development. Comprehensive toolkit for automating open-autonomy development workflows."
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/8ball030/auto_dev
+      link: https://github.com/ExploreLabsxyz/auto_dev
       name: Github
     - icon: material/email
       link: "mailto:8ball030@gmail.com"
