@@ -5,11 +5,13 @@ repo_name: 8ball030/auto_dev
 #strict: true
 nav:
   - Home: index.md
-  - Installation: installation.md
-  - Usage: 
+  - Getting Started:
+    - Installation: installation.md
+    - Quick Start: usage.md
+  - User Guide:
     - Overview: usage.md
-    - FSM: fsm.md
-    - OpenAPI: openapi.md
+    - FSM Development: fsm.md
+    - OpenAPI Integration: openapi.md
   - API Reference:
     - Overview: api/index.md
     - auto_dev: api/auto_dev.md
@@ -22,9 +24,10 @@ nav:
     - Constants: api/constants.md
   - CLI Reference:
     - Commands: commands/index.md
-  - Deployment: deployment.md
-  - Contributing: contributing.md
-  - Changelog: changelog.md
+  - Developer Guide:
+    - Contributing: contributing.md
+    - Deployment: deployment.md
+    - Changelog: changelog.md
 theme:
   name: material
   language: en
@@ -59,7 +62,13 @@ theme:
     - navigation.instant
     - navigation.tabs.sticky
     - navigation.expand
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.tracking
     - content.code.copy
+    - toc.follow
+    - toc.integrate
 markdown_extensions:
   - pymdownx.emoji
   - pymdownx.critic
