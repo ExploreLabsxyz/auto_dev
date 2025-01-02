@@ -89,11 +89,12 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:mkdocs_mermaid2_plugin.plugin.fence_mermaid_custom
+          format: !!python/name:mkdocs_mermaid2_plugin.fence_mermaid
 plugins:
   - include-markdown
   - search:
       lang: en
+  - mermaid2
   - autorefs
   - mkdocstrings:
       default_handler: python
