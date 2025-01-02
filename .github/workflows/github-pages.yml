@@ -30,8 +30,12 @@ jobs:
           pip install mkdocs-material
           pip install mkdocstrings[python]
           pip install mkdocs-include-markdown-plugin
+      - name: Install package
+        run: pip install -e .
       - name: Build site
         run: mkdocs build
+        env:
+          PYTHONPATH: ${{ github.workspace }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
