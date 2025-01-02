@@ -13,7 +13,6 @@ nav:
   - API Reference:
     - Overview: api/index.md
     - auto_dev: api/auto_dev.md
-    - Commands: api/commands.md
     - Connections: api/connections.md
     - Contracts: api/contracts.md
     - FSM: api/fsm.md
@@ -21,6 +20,9 @@ nav:
     - Protocols: api/protocols.md
     - Utils: api/utils.md
     - Constants: api/constants.md
+  - CLI Reference:
+    - Commands: commands/index.md
+  - Deployment: deployment.md
   - Contributing: contributing.md
   - Changelog: changelog.md
 theme:
@@ -84,10 +86,6 @@ markdown_extensions:
   - meta
   - pymdownx.superfences:
         # make exceptions to highlighting of code:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid_custom
 plugins:
   - include-markdown
   - search:
