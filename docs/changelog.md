@@ -2,4 +2,4 @@
 title: Changelog
 ---
 
-{% include_relative ../CHANGELOG.md %}
+{% include_relative CHANGELOG.md %}
