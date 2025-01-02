@@ -22,6 +22,7 @@ nav:
     - Constants: api/constants.md
   - CLI Reference:
     - Commands: commands/index.md
+  - Deployment: deployment.md
   - Contributing: contributing.md
   - Changelog: changelog.md
 theme:

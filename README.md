@@ -33,8 +33,25 @@ For detailed information about using auto_dev, check out our documentation:
 - [Installation Guide](docs/installation.md) - Complete setup instructions and environment configuration
 - [Usage Guide](docs/usage.md) - Detailed examples and common workflows
 - [CLI Reference](docs/commands/index.md) - Comprehensive command-line interface documentation
+- [Deployment Guide](docs/deployment.md) - Instructions for local and production deployments
 
 For development setup and contribution guidelines, see the [Installation Guide](docs/installation.md#development-setup).
+
+## Development
+
+For development tools and workflows:
+- [Code Formatting](docs/usage.md#development-workflow) - Learn about code formatting standards
+- [Testing](docs/usage.md#development-workflow) - Running and writing tests
+- [Contributing](docs/contributing.md) - Guidelines for contributing
+- [Deployment](docs/deployment.md) - Setting up development environments
+
+## Usage Examples
+
+Check out these guides for common use cases:
+- [Quick Start](docs/usage.md#quick-start-guide) - Get started quickly
+- [Protocol Scaffolding](docs/usage.md#common-workflows) - Generate protocol components
+- [Contract Integration](docs/usage.md#common-workflows) - Work with smart contracts
+- [Development Tools](docs/installation.md#development-tools) - Available development tools
 
 ```bash
 # run the agent and verify the endpoint

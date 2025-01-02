@@ -96,8 +96,104 @@ This guide will help you get started with auto_dev quickly.
    adev test -p tests --coverage-report
    ```
 
+## Advanced Scaffolding Scenarios
+
+### Overriding Default Templates
+```bash
+# List available templates
+adev create --help
+
+# Create custom template
+adev create my_author/custom_agent -t eightballer/base --force
+
+# Override specific components
+adev create my_author/custom_agent \
+    -t eightballer/frontend_agent \
+    --override-protocol my_protocol \
+    --override-connection my_connection
+```
+
+### Multiple Protocol Generation
+```bash
+# Generate multiple protocols from specs
+for spec in specs/protocols/*.yaml; do
+    adev scaffold protocol "$spec"
+done
+
+# Publish all to registry
+aea -s publish --push-missing
+```
+
+### Custom Contract Integration
+```bash
+# Generate contract with custom settings
+adev scaffold contract 0xAddress contract_name \
+    --block-explorer-api-key $BLOCK_EXPLORER_API_KEY \
+    --block-explorer-url "https://api-goerli.arbiscan.io" \
+    --custom-abi path/to/abi.json \
+    --implementation-class MyCustomContract
+
+# Generate multiple contracts
+for addr in $CONTRACT_ADDRESSES; do
+    adev scaffold contract "$addr" "${addr}_contract" \
+        --block-explorer-api-key $BLOCK_EXPLORER_API_KEY
+done
+```
+
+### Advanced FSM Workflows
+```bash
+# Generate FSM from complex spec
+adev scaffold fsm \
+    --spec complex_fsm.yaml \
+    --custom-states custom_states.py \
+    --transitions transitions.yaml
+
+# Chain multiple FSMs
+adev scaffold fsm-chain \
+    --specs "fsm1.yaml,fsm2.yaml,fsm3.yaml" \
+    --output chained_fsm.yaml
+```
+
+### Development Best Practices
+
+1. **Code Quality**
+   ```bash
+   # Format only changed files
+   adev fmt -p . --changed-only
+
+   # Run specific linting checks
+   adev lint -p . --select E,W,F
+
+   # Run tests with coverage
+   adev test -p tests --coverage-report
+   ```
+
+2. **Dependency Management**
+   ```bash
+   # Update specific dependencies
+   adev deps update -p . --packages "package1,package2"
+
+   # Check for outdated dependencies
+   adev deps check -p .
+
+   # Update all dependencies
+   adev deps update -p . --all
+   ```
+
+3. **Release Process**
+   ```bash
+   # Prepare release
+   git checkout main
+   git pull
+   adev release --dry-run  # Check what would be released
+
+   # Perform release
+   adev release
+   ```
+
 ## Next Steps
 
 - Check the [CLI Reference](commands/index.md) for detailed command documentation
 - Explore [FSM documentation](fsm.md) for state machine development
 - Read [OpenAPI guide](openapi.md) for API integration
+- Review [Deployment Guide](deployment.md) for production setup
