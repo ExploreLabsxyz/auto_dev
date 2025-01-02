@@ -81,7 +81,7 @@ To run and develop the documentation locally:
 
 1. Install documentation dependencies:
    ```console
-   pip install mkdocs-material mkdocs-include-markdown-plugin mkdocstrings[python] mkdocs-autorefs mermaid2
+   pip install mkdocs-material mkdocs-include-markdown-plugin mkdocstrings[python] mkdocs-autorefs mkdocs-mermaid2-plugin
    ```
 
 2. Serve documentation locally:
