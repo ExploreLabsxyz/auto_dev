@@ -75,7 +75,7 @@ The repository uses several development tools:
 3. **pytest** for testing (current coverage: ~35%)
 4. **mkdocs** for documentation
 
-### Running Documentation Locally
+## Running Documentation Locally
 
 To run and develop the documentation locally:
 
