@@ -30,10 +30,13 @@ yes 'third_party' | autonomy packages lock
 
 For detailed information about using auto_dev, check out our documentation:
 
-- [Installation Guide](docs/installation.md) - Complete setup instructions and environment configuration
-- [Usage Guide](docs/usage.md) - Detailed examples and common workflows
-- [CLI Reference](docs/commands/index.md) - Comprehensive command-line interface documentation
-- [Deployment Guide](docs/deployment.md) - Instructions for local and production deployments
+You can access our documentation in two ways:
+- Online at [GitHub Pages](https://8ball030.github.io/auto_dev/)
+- Or through the following markdown files:
+  - [Installation Guide](docs/installation.md) - Complete setup instructions and environment configuration
+  - [Usage Guide](docs/usage.md) - Detailed examples and common workflows
+  - [CLI Reference](docs/commands/index.md) - Comprehensive command-line interface documentation
+  - [Deployment Guide](docs/deployment.md) - Instructions for local and production deployments
 
 For development setup and contribution guidelines, see the [Installation Guide](docs/installation.md#development-setup).
 
