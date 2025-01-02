@@ -38,6 +38,9 @@ jobs:
             mergedeep \
             mkdocs-get-deps
 
+      - name: Install package
+        run: pip install -e .
+
       - name: Build
         run: mkdocs build
 

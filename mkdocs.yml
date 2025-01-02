@@ -16,6 +16,7 @@ nav:
     - Overview: api/index.md
     - auto_dev: api/auto_dev.md
     - Connections: api/connections.md
+    - DAO: dao.md
     - Contracts: api/contracts.md
     - FSM: api/fsm.md
     - Handler: api/handler.md
