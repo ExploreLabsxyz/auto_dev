@@ -75,6 +75,29 @@ The repository uses several development tools:
 3. **pytest** for testing (current coverage: ~35%)
 4. **mkdocs** for documentation
 
+### Running Documentation Locally
+
+To run and develop the documentation locally:
+
+1. Install documentation dependencies:
+   ```console
+   pip install mkdocs-material mkdocs-include-markdown-plugin mkdocstrings[python] mkdocs-autorefs mermaid2
+   ```
+
+2. Serve documentation locally:
+   ```console
+   mkdocs serve
+   ```
+   This will start a development server at `http://127.0.0.1:8000/`
+
+3. Build documentation (optional):
+   ```console
+   mkdocs build
+   ```
+   This generates static files in the `site/` directory
+
+The documentation will auto-reload when you make changes to the markdown files.
+
 ### Environment Variables
 
 Some features require environment variables:

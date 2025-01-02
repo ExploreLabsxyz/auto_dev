@@ -37,6 +37,13 @@ For detailed information about using auto_dev, check out our documentation:
 
 For development setup and contribution guidelines, see the [Installation Guide](docs/installation.md#development-setup).
 
+### Local Documentation
+
+To run the documentation locally:
+1. Follow the [documentation setup guide](docs/installation.md#running-documentation-locally)
+2. Visit `http://127.0.0.1:8000/` in your browser
+3. Documentation will auto-reload as you make changes
+
 ## Development
 
 For development tools and workflows:
