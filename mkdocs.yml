@@ -86,15 +86,10 @@ markdown_extensions:
   - meta
   - pymdownx.superfences:
         # make exceptions to highlighting of code:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:mkdocs_mermaid2_plugin.fence_mermaid
 plugins:
   - include-markdown
   - search:
       lang: en
-  - mermaid2
   - autorefs
   - mkdocstrings:
       default_handler: python
