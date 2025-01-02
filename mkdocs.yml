@@ -104,6 +104,16 @@ plugins:
 extra_css:
   - stylesheets/extra.css
 extra:
+  meta:
+    description: "Tooling to speed up open-autonomy development. A comprehensive toolkit for automating and enhancing open-autonomy development workflows."
+    keywords: "autonomy, tooling, open-autonomy, agents, mkdocs, development, automation, scaffolding, protocols, contracts"
+    og:title: "auto_dev – Autonomy Dev Tooling"
+    og:description: "Tooling to speed up open-autonomy development. Comprehensive toolkit for automating open-autonomy development workflows."
+    og:type: "website"
+    og:url: "https://8ball030.github.io/auto_dev"
+    twitter:card: "summary"
+    twitter:title: "auto_dev – Autonomy Dev Tooling"
+    twitter:description: "Tooling to speed up open-autonomy development. Comprehensive toolkit for automating open-autonomy development workflows."
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/8ball030/auto_dev
