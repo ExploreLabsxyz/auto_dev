@@ -112,7 +112,7 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
     if not agent_dir.exists():
         msg = f"Agent directory not created at {agent_dir}"
         raise ValueError(msg)
-    
+
     os.chdir(str(agent_dir))
 
     commands = (

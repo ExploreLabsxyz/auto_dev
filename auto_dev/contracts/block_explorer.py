@@ -1,11 +1,11 @@
 """Module to interact with the blockchain explorer."""
 
+import json
 from typing import Any, Dict, Optional
 from dataclasses import dataclass
-import json
 
-from web3 import Web3
 import requests
+from web3 import Web3
 
 from auto_dev.constants import DEFAULT_TIMEOUT
 

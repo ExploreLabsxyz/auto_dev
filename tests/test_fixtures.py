@@ -5,9 +5,10 @@ from pathlib import Path
 import yaml
 
 
-def test_dummy_agent_tim(dummy_agent_tim):
+def test_dummy_agent_tim(dummy_agent_tim, test_packages_filesystem):
     """Test fixture for dummy agent tim."""
 
+    assert test_packages_filesystem
     assert dummy_agent_tim.exists()
     config_path = Path.cwd() / "aea-config.yaml"
     assert config_path.exists()
