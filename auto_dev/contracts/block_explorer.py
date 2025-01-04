@@ -1,47 +1,60 @@
 """Module to interact with the blockchain explorer."""
 
-import json
+from typing import Any, Dict, Optional
 from dataclasses import dataclass
+import json
 
-import requests
 from web3 import Web3
+import requests
 
 from auto_dev.constants import DEFAULT_TIMEOUT
 
 
 @dataclass
 class BlockExplorer:
-    """Class to interact with the blockchain explorer."""
+    """Class to interact with the blockchain explorer.
 
-    url: str
-    api_key: str = None
+    A class that provides methods to interact with blockchain explorers
+    for retrieving contract information without requiring API keys.
+    """
 
-    def _authenticated_request(self, url: str, params: dict | None = None):
-        """Make an authenticated request.
-        The api key is encoded into the url.
+    base_url: str = "https://abidata.net"
+
+    def get_abi(self, address: str, network: Optional[str] = None) -> Dict[str, Any]:
+        """Get the ABI for the contract at the address.
+
+        Retrieves the ABI (Application Binary Interface) for a smart contract
+        from abidata.net, which provides a simple API that doesn't require
+        authentication. The method validates the contract address format and
+        handles network-specific ABI retrieval.
+
+        Args:
+            address: The contract address to fetch the ABI for. Must be a valid
+                    Ethereum address that can be converted to checksum format.
+            network: Optional network name (e.g., 'arbitrum', 'polygon').
+                    If not provided, defaults to Ethereum mainnet.
+
+        Returns:
+            Dict[str, Any]: The contract ABI as a dictionary containing the
+                           interface specification with function signatures,
+                           event definitions, and other contract details.
+
+        Raises:
+            ValueError: If the ABI cannot be retrieved from the explorer due to
+                       invalid response, network issues, or malformed JSON.
         """
-        if not params:
-            params = {}
-        params["apiKey"] = self.api_key
-        return requests.get(
-            url,
-            params=params,
-            timeout=DEFAULT_TIMEOUT,
-        )
-
-    def get_abi(self, address: str):
-        """Get the abi for the contract at the address."""
         web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
         check_address = web3.to_checksum_address(address)
-        url = self.url + "/api?module=contract&action=getabi&address=" + str(check_address)
-        response = self._authenticated_request(url)
+        if network:
+            url = f"{self.base_url}/{network}/{check_address}"
+        else:
+            url = f"{self.base_url}/{check_address}"
+        response = requests.get(url, timeout=DEFAULT_TIMEOUT)
         if response.status_code != 200:
-            msg = f"Failed to get abi with api response error result `{response.status_code}`"
+            msg = f"Failed to get ABI from {url} with status code {response.status_code}"
             raise ValueError(msg)
-        if response.json()["status"] != "1":
-            msg = f"Failed to get abi for address {address} with status {response.json()['result']}"
-            raise ValueError(msg)
-        if response.status_code != 200:
-            msg = f"Failed to get abi with api response error result `{response.status_code}`"
-            raise ValueError(msg)
-        return json.loads(response.json()["result"])
+        try:
+            return response.json()
+        except json.JSONDecodeError as e:
+            msg = f"Failed to decode JSON response from {url}: {str(e)}"
+            raise ValueError(msg) from e

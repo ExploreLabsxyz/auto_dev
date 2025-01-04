@@ -7,33 +7,41 @@ from pathlib import Path
 import pytest
 import responses
 
-from auto_dev.commands.scaffold import BlockExplorer, ContractScaffolder
 from auto_dev.constants import DEFAULT_ENCODING
+from auto_dev.commands.scaffold import BlockExplorer, ContractScaffolder
 
 
 KNOWN_ADDRESS = "0xc939df369C0Fc240C975A6dEEEE77d87bCFaC259"
-BLOCK_EXPLORER_URL = "https://api.etherscan.io"
-BLOCK_EXPLORER_API_KEY = None
-
+KNOWN_NETWORK = "arbitrum"
 DUMMY_ABI = json.loads((Path() / "tests" / "data" / "dummy_abi.json").read_text(DEFAULT_ENCODING))
+
 
 @pytest.fixture
 def block_explorer():
     """Block explorer fixture."""
-    return BlockExplorer(BLOCK_EXPLORER_URL, BLOCK_EXPLORER_API_KEY)
+    return BlockExplorer()
 
 
 @responses.activate
 def test_block_explorer(block_explorer):
     """Test the block explorer."""
+    # Test mainnet (default network)
     responses.add(
         responses.GET,
-        f"{BLOCK_EXPLORER_URL}/api?module=contract&action=getabi&address={KNOWN_ADDRESS}",
-        json={"status": "1", "message": "OK", "result": json.dumps({'abi': DUMMY_ABI})},
+        f"https://abidata.net/{KNOWN_ADDRESS}",
+        json=DUMMY_ABI,
     )
-    block_explorer = BlockExplorer(BLOCK_EXPLORER_URL, BLOCK_EXPLORER_API_KEY)
     abi = block_explorer.get_abi(KNOWN_ADDRESS)
-    assert abi
+    assert abi == DUMMY_ABI
+
+    # Test with specific network
+    responses.add(
+        responses.GET,
+        f"https://abidata.net/{KNOWN_NETWORK}/{KNOWN_ADDRESS}",
+        json=DUMMY_ABI,
+    )
+    abi = block_explorer.get_abi(KNOWN_ADDRESS, network=KNOWN_NETWORK)
+    assert abi == DUMMY_ABI
 
 
 # we now test the scaffolder
@@ -46,14 +54,30 @@ def scaffolder(block_explorer):
 @responses.activate
 def test_scaffolder_generate(scaffolder):
     """Test the scaffolder."""
+    test_abi = {"abi": "some_abi"}
+
+    # Test mainnet scaffolding
     responses.add(
         responses.GET,
-        f"{BLOCK_EXPLORER_URL}/api?module=contract&action=getabi&address={KNOWN_ADDRESS}",
-        json={"status": "1", "message": "OK", "result": '{"abi": "some_abi"}'},
+        f"https://abidata.net/{KNOWN_ADDRESS}",
+        json=test_abi,
     )
     new_contract = scaffolder.from_block_explorer(KNOWN_ADDRESS, "new_contract")
     assert new_contract
-    assert new_contract.abi
+    assert new_contract.abi == test_abi
+    assert new_contract.address == KNOWN_ADDRESS
+    assert new_contract.name == "new_contract"
+    assert new_contract.author == "eightballer"
+
+    # Test network-specific scaffolding
+    responses.add(
+        responses.GET,
+        f"https://abidata.net/{KNOWN_NETWORK}/{KNOWN_ADDRESS}",
+        json=test_abi,
+    )
+    new_contract = scaffolder.from_block_explorer(KNOWN_ADDRESS, "new_contract", network=KNOWN_NETWORK)
+    assert new_contract
+    assert new_contract.abi == test_abi
     assert new_contract.address == KNOWN_ADDRESS
     assert new_contract.name == "new_contract"
     assert new_contract.author == "eightballer"
@@ -63,12 +87,30 @@ def test_scaffolder_generate(scaffolder):
 def test_scaffolder_generate_openaea_contract(scaffolder, test_filesystem):
     """Test the scaffolder."""
     del test_filesystem
+    test_abi = {"abi": "some_abi"}
+
+    # Test contract generation with mainnet ABI
     responses.add(
         responses.GET,
-        f"{BLOCK_EXPLORER_URL}/api?module=contract&action=getabi&address={KNOWN_ADDRESS}",
-        json={"status": "1", "message": "OK", "result": '{"abi": "some_abi"}'},
+        f"https://abidata.net/{KNOWN_ADDRESS}",
+        json=test_abi,
     )
     new_contract = scaffolder.from_block_explorer(KNOWN_ADDRESS, "new_contract")
+    contract_path = scaffolder.generate_openaea_contract(new_contract)
+    assert contract_path
+    assert contract_path.exists()
+    assert contract_path.name == "new_contract"
+    assert contract_path.parent.name == "contracts"
+    shutil.rmtree(contract_path.parent)
+    assert not contract_path.exists()
+
+    # Test contract generation with network-specific ABI
+    responses.add(
+        responses.GET,
+        f"https://abidata.net/{KNOWN_NETWORK}/{KNOWN_ADDRESS}",
+        json=test_abi,
+    )
+    new_contract = scaffolder.from_block_explorer(KNOWN_ADDRESS, "new_contract", network=KNOWN_NETWORK)
     contract_path = scaffolder.generate_openaea_contract(new_contract)
     assert contract_path
     assert contract_path.exists()

@@ -3,6 +3,7 @@
 import os
 import json
 import shutil
+from typing import Optional
 from dataclasses import dataclass
 
 from auto_dev.utils import isolated_filesystem
@@ -27,9 +28,19 @@ class ContractScaffolder:
                 abi = abi["abi"]
         return Contract(abi=abi, name=name, address=address, author=self.author)
 
-    def from_block_explorer(self, address: str, name: str):
-        """Scaffold a contract from a block explorer."""
-        abi = self.block_explorer.get_abi(address)
+    def from_block_explorer(self, address: str, name: str, network: Optional[str] = None):
+        """Scaffold a contract from a block explorer.
+
+        Args:
+            address: The contract address
+            name: The name for the contract
+            network: Optional network name (e.g., 'arbitrum', 'polygon')
+                    If not provided, defaults to Ethereum mainnet
+
+        Returns:
+            Contract: The scaffolded contract instance
+        """
+        abi = self.block_explorer.get_abi(address, network=network)
         return Contract(abi=abi, name=name, address=address, author=self.author)
 
     def generate_openaea_contract(self, contract: Contract):
@@ -49,17 +60,19 @@ class ContractScaffolder:
             msg = f"Contract {contract.name} already exists."
             raise ValueError(msg)
 
-        init_cmd = f"aea init --author {self.author} --reset --ipfs --remote".split(" ")
-        if not CommandExecutor(init_cmd).execute(verbose=verbose):
+        init_cmd = f"aea init --author {self.author} --reset --ipfs --remote"
+        if not CommandExecutor(init_cmd).execute(verbose=verbose, shell=True):
             msg = "Failed to initialise agent lib."
             raise ValueError(msg)
 
         with isolated_filesystem():
-            if not CommandExecutor("aea create myagent".split(" ")).execute(verbose=verbose):
+            create_cmd = "aea create myagent"
+            if not CommandExecutor(create_cmd).execute(verbose=verbose, shell=True):
                 msg = "Failed to create agent."
                 raise ValueError(msg)
             os.chdir("myagent")
-            if not CommandExecutor(f"aea scaffold contract {contract.name}".split(" ")).execute(verbose=verbose):
+            scaffold_cmd = f"aea scaffold contract {contract.name}"
+            if not CommandExecutor(scaffold_cmd).execute(verbose=verbose, shell=True):
                 msg = "Failed to scaffold contract."
                 raise ValueError(msg)
 
