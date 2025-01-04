@@ -73,8 +73,8 @@ def test_packages_filesystem(test_filesystem):
         command_executor = CommandExecutor(["autonomy", "packages", "init"])
         if not command_executor.execute(verbose=True):
             raise ValueError("Failed to initialize packages directory")
-    except Exception as e:
-        raise ValueError(f"Failed to initialize packages directory: {str(e)}")
+    except (OSError, RuntimeError) as e:
+        raise ValueError(f"Failed to initialize packages directory") from e
 
     # Write packages configuration
     with open(AUTONOMY_PACKAGES_FILE, "w", encoding=DEFAULT_ENCODING) as file:
