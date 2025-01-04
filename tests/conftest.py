@@ -95,6 +95,11 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
     monkeypatch.syspath_prepend(test_filesystem)
     assert Path.cwd() == Path(test_filesystem)
 
+    # Ensure packages directory exists
+    packages_dir = Path(test_filesystem) / "packages"
+    packages_dir.mkdir(parents=True, exist_ok=True)
+    (packages_dir / "dummy_author" / "agents").mkdir(parents=True, exist_ok=True)
+
     agent = PublicId.from_str("dummy_author/tim")
     command = f"adev create {agent!s} -t eightballer/base "
     command_executor = CommandExecutor(command)
@@ -103,7 +108,12 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
         msg = f"CLI command execution failed: `{command}`"
         raise ValueError(msg)
 
-    os.chdir(str(Path.cwd() / agent.name))
+    agent_dir = Path.cwd() / agent.name
+    if not agent_dir.exists():
+        msg = f"Agent directory not created at {agent_dir}"
+        raise ValueError(msg)
+    
+    os.chdir(str(agent_dir))
 
     commands = (
         "aea generate-key ethereum",
