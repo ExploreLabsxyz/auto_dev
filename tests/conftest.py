@@ -109,11 +109,23 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
     if agent_dir.exists():
         shutil.rmtree(agent_dir)
     
+    # Initialize packages first
+    init_command = "autonomy packages init"
+    init_executor = CommandExecutor(init_command)
+    if not init_executor.execute(verbose=True):
+        raise ValueError("Failed to initialize packages directory")
+    
+    # Create the agent
     command = f"adev create {agent!s} -t eightballer/base"
     command_executor = CommandExecutor(command)
     result = command_executor.execute(verbose=True)
     if not result:
         msg = f"CLI command execution failed: `{command}`"
+        raise ValueError(msg)
+    
+    # Verify agent directory was created
+    if not agent_dir.exists():
+        msg = f"Agent directory not created at {agent_dir}"
         raise ValueError(msg)
 
     agent_dir = Path.cwd() / agent.name
