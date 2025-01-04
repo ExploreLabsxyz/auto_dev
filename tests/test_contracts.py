@@ -14,7 +14,7 @@ from auto_dev.commands.scaffold import BlockExplorer, ContractScaffolder
 KNOWN_ADDRESS = "0xc939df369C0Fc240C975A6dEEEE77d87bCFaC259"
 KNOWN_NETWORK = "arbitrum"
 DUMMY_ABI = json.loads((Path() / "tests" / "data" / "dummy_abi.json").read_text(DEFAULT_ENCODING))
-DUMMY_API_RESPONSE = {"ok": True, "abi": DUMMY_ABI}
+DUMMY_API_RESPONSE = {"abi": DUMMY_ABI}
 
 
 @pytest.fixture
@@ -48,7 +48,7 @@ def scaffolder(block_explorer):
 def test_scaffolder_generate(scaffolder, network):
     """Test the scaffolder with different networks."""
     test_abi = {"abi": "some_abi"}
-    test_response = {"ok": True, "abi": test_abi}
+    test_response = {"abi": test_abi}
 
     responses.add(
         responses.GET,
@@ -69,7 +69,7 @@ def test_scaffolder_generate_openaea_contract(scaffolder, test_filesystem, netwo
     """Test the scaffolder with different networks."""
     del test_filesystem
     test_abi = {"abi": "some_abi"}
-    test_response = {"ok": True, "abi": test_abi}
+    test_response = {"abi": test_abi}
 
     responses.add(
         responses.GET,

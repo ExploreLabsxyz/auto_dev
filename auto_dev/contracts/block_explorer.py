@@ -52,9 +52,6 @@ class BlockExplorer:
             raise ValueError(msg)
         try:
             result = response.json()
-            if not result.get("ok"):
-                msg = f"Failed to get ABI from {url}: API returned not ok"
-                raise ValueError(msg)
             return result["abi"]
         except (json.JSONDecodeError, KeyError) as e:
             msg = f"Failed to decode JSON response from {url}: {str(e)}"
