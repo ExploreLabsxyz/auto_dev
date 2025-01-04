@@ -20,7 +20,7 @@ class BlockExplorer:
 
     base_url: str = "https://abidata.net"
 
-    def get_abi(self, address: str, network: Optional[str] = None) -> Dict[str, Any]:
+    def get_abi(self, address: str, network: str) -> Dict[str, Any]:
         """Get the ABI for the contract at the address.
 
         Retrieves the ABI (Application Binary Interface) for a smart contract
@@ -31,8 +31,8 @@ class BlockExplorer:
         Args:
             address: The contract address to fetch the ABI for. Must be a valid
                     Ethereum address that can be converted to checksum format.
-            network: Optional network name (e.g., 'arbitrum', 'polygon').
-                    If not provided, defaults to Ethereum mainnet.
+            network: Network name (e.g., 'arbitrum', 'polygon', 'base').
+                    Required to specify which network to fetch the ABI from.
 
         Returns:
             Dict[str, Any]: The contract ABI as a dictionary containing the
@@ -45,16 +45,17 @@ class BlockExplorer:
         """
         web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
         check_address = web3.to_checksum_address(address)
-        if network:
-            url = f"{self.base_url}/{network}/{check_address}"
-        else:
-            url = f"{self.base_url}/{check_address}"
+        url = f"{self.base_url}/{check_address}?network={network}"
         response = requests.get(url, timeout=DEFAULT_TIMEOUT)
         if response.status_code != 200:
             msg = f"Failed to get ABI from {url} with status code {response.status_code}"
             raise ValueError(msg)
         try:
-            return response.json()
-        except json.JSONDecodeError as e:
+            result = response.json()
+            if not result.get("ok"):
+                msg = f"Failed to get ABI from {url}: API returned not ok"
+                raise ValueError(msg)
+            return result["abi"]
+        except (json.JSONDecodeError, KeyError) as e:
             msg = f"Failed to decode JSON response from {url}: {str(e)}"
             raise ValueError(msg) from e

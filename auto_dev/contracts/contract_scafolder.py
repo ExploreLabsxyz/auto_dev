@@ -28,19 +28,19 @@ class ContractScaffolder:
                 abi = abi["abi"]
         return Contract(abi=abi, name=name, address=address, author=self.author)
 
-    def from_block_explorer(self, address: str, name: str, network: Optional[str] = None):
+    def from_block_explorer(self, address: str, name: str, network: str):
         """Scaffold a contract from a block explorer.
 
         Args:
             address: The contract address
             name: The name for the contract
-            network: Optional network name (e.g., 'arbitrum', 'polygon')
-                    If not provided, defaults to Ethereum mainnet
+            network: Network name (e.g., 'arbitrum', 'polygon', 'base')
+                    Required to specify which network to fetch the ABI from
 
         Returns:
             Contract: The scaffolded contract instance
         """
-        abi = self.block_explorer.get_abi(address, network=network)
+        abi = self.block_explorer.get_abi(address, network)
         return Contract(abi=abi, name=name, address=address, author=self.author)
 
     def generate_openaea_contract(self, contract: Contract):

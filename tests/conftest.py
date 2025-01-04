@@ -67,10 +67,12 @@ def test_clean_filesystem():
 @pytest.fixture
 def test_packages_filesystem(test_filesystem):
     """Fixture for testing packages."""
-    packages_dir = Path(test_filesystem) / "packages"
-    packages_dir.mkdir(parents=True, exist_ok=True)
-    # Create local registry structure
-    (packages_dir / "dummy_author" / "agents").mkdir(parents=True, exist_ok=True)
+    # Initialize packages using autonomy CLI
+    command_executor = CommandExecutor(["autonomy", "packages", "init"])
+    if not command_executor.execute(verbose=True):
+        raise ValueError("Failed to initialize packages directory")
+
+    # Write packages configuration
     with open(AUTONOMY_PACKAGES_FILE, "w", encoding=DEFAULT_ENCODING) as file:
         file.write(SAMPLE_PACKAGES_JSON["packages/packages.json"])
 
@@ -95,10 +97,10 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
     monkeypatch.syspath_prepend(test_filesystem)
     assert Path.cwd() == Path(test_filesystem)
 
-    # Ensure packages directory exists
-    packages_dir = Path(test_filesystem) / "packages"
-    packages_dir.mkdir(parents=True, exist_ok=True)
-    (packages_dir / "dummy_author" / "agents").mkdir(parents=True, exist_ok=True)
+    # Initialize packages using autonomy CLI
+    command_executor = CommandExecutor(["autonomy", "packages", "init"])
+    if not command_executor.execute(verbose=True):
+        raise ValueError("Failed to initialize packages directory")
 
     agent = PublicId.from_str("dummy_author/tim")
     command = f"adev create {agent!s} -t eightballer/base "
