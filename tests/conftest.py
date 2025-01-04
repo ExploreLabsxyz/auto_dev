@@ -66,8 +66,11 @@ def test_clean_filesystem():
 
 @pytest.fixture
 def test_packages_filesystem(test_filesystem):
-    """Fixure for testing packages."""
-    (Path(test_filesystem) / "packages").mkdir(parents=True, exist_ok=True)
+    """Fixture for testing packages."""
+    packages_dir = Path(test_filesystem) / "packages"
+    packages_dir.mkdir(parents=True, exist_ok=True)
+    # Create local registry structure
+    (packages_dir / "dummy_author" / "agents").mkdir(parents=True, exist_ok=True)
     with open(AUTONOMY_PACKAGES_FILE, "w", encoding=DEFAULT_ENCODING) as file:
         file.write(SAMPLE_PACKAGES_JSON["packages/packages.json"])
 

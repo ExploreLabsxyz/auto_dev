@@ -34,22 +34,22 @@ def test_formats_self(cli_runner, test_filesystem):
     assert runner.return_code == 0, runner.output
 
 
-def test_create_invalid_name(cli_runner, test_filesystem):
+def test_create_invalid_name(cli_runner, test_packages_filesystem):
     """Test the create command fails with invalid agent name."""
-    assert str(Path.cwd()) == test_filesystem
+    assert str(Path.cwd()) == test_packages_filesystem
     cmd = ["adev", "-v", "create", "NEW_AGENT", "-t", "eightballer/base", "--publish", "--force"]
     runner = cli_runner(cmd)
     result = runner.execute()
     expected_error = "Invalid value for 'PUBLIC_ID': NEW_AGENT"
     assert not result
     assert expected_error in runner.output, f"Expected error message not found in output: {runner.output}"
-    agent_path = Path(test_filesystem) / "NEW_AGENT"
+    agent_path = Path(test_packages_filesystem) / "NEW_AGENT"
     assert not agent_path.exists(), "Agent directory should not have been created"
 
 
-def test_create_valid_names(cli_runner, test_filesystem):
+def test_create_valid_names(cli_runner, test_packages_filesystem):
     """Test the create command succeeds with valid agent names."""
-    assert str(Path.cwd()) == test_filesystem
+    assert str(Path.cwd()) == test_packages_filesystem
 
     valid_names = ["my_agent", "_test_agent", "agent123", "valid_agent_name_123"]
 
