@@ -56,7 +56,11 @@ def test_doc_code_execution(doc, test_packages_filesystem):
         for command in commands:
             logger.info(f'Executing command:\n""\n{command}\n""')
             if command.startswith("cd "):
-                os.chdir(command.split(" ")[1])
+                target_dir = command.split(" ")[1]
+                # Ensure directory exists before cd
+                if not Path(target_dir).exists():
+                    Path(target_dir).mkdir(parents=True, exist_ok=True)
+                os.chdir(target_dir)
             else:
                 executor = CommandExecutor(command)
                 assert executor.execute(stream=True, shell=True, verbose=False), f"Command failed: {command}"

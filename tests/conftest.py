@@ -2,6 +2,7 @@
 # pylint: disable=W0135
 
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -103,9 +104,14 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
         raise ValueError("Failed to initialize packages directory")
 
     agent = PublicId.from_str("dummy_author/tim")
-    command = f"adev create {agent!s} -t eightballer/base "
+    # Create the agent directory
+    agent_dir = Path.cwd() / agent.name
+    if agent_dir.exists():
+        shutil.rmtree(agent_dir)
+    
+    command = f"adev create {agent!s} -t eightballer/base"
     command_executor = CommandExecutor(command)
-    result = command_executor.execute(verbose=True, shell=True)
+    result = command_executor.execute(verbose=True)
     if not result:
         msg = f"CLI command execution failed: `{command}`"
         raise ValueError(msg)

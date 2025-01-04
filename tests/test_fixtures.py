@@ -9,6 +9,7 @@ def test_dummy_agent_tim(dummy_agent_tim, test_packages_filesystem):
     """Test fixture for dummy agent tim."""
 
     assert test_packages_filesystem
+    assert Path(test_packages_filesystem).exists()
     assert dummy_agent_tim.exists()
     config_path = Path.cwd() / "aea-config.yaml"
     assert config_path.exists()
