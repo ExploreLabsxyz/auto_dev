@@ -69,9 +69,12 @@ def test_clean_filesystem():
 def test_packages_filesystem(test_filesystem):
     """Fixture for testing packages."""
     # Initialize packages using autonomy CLI
-    command_executor = CommandExecutor(["autonomy", "packages", "init"])
-    if not command_executor.execute(verbose=True):
-        raise ValueError("Failed to initialize packages directory")
+    try:
+        command_executor = CommandExecutor(["autonomy", "packages", "init"])
+        if not command_executor.execute(verbose=True):
+            raise ValueError("Failed to initialize packages directory")
+    except Exception as e:
+        raise ValueError(f"Failed to initialize packages directory: {str(e)}")
 
     # Write packages configuration
     with open(AUTONOMY_PACKAGES_FILE, "w", encoding=DEFAULT_ENCODING) as file:
@@ -98,31 +101,20 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
     monkeypatch.syspath_prepend(test_filesystem)
     assert Path.cwd() == Path(test_filesystem)
 
-    # Initialize packages using autonomy CLI
-    command_executor = CommandExecutor(["autonomy", "packages", "init"])
-    if not command_executor.execute(verbose=True):
-        raise ValueError("Failed to initialize packages directory")
-
     agent = PublicId.from_str("dummy_author/tim")
     # Create the agent directory
     agent_dir = Path.cwd() / agent.name
     if agent_dir.exists():
         shutil.rmtree(agent_dir)
-    
-    # Initialize packages first
-    init_command = "autonomy packages init"
-    init_executor = CommandExecutor(init_command)
-    if not init_executor.execute(verbose=True):
-        raise ValueError("Failed to initialize packages directory")
-    
+
     # Create the agent
-    command = f"adev create {agent!s} -t eightballer/base"
-    command_executor = CommandExecutor(command)
+    create_cmd = ["adev", "create", str(agent), "-t", "eightballer/base"]
+    command_executor = CommandExecutor(create_cmd)
     result = command_executor.execute(verbose=True)
     if not result:
-        msg = f"CLI command execution failed: `{command}`"
+        msg = f"CLI command execution failed: {' '.join(create_cmd)}"
         raise ValueError(msg)
-    
+
     # Verify agent directory was created
     if not agent_dir.exists():
         msg = f"Agent directory not created at {agent_dir}"
@@ -135,15 +127,15 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
 
     os.chdir(str(agent_dir))
 
-    commands = (
-        "aea generate-key ethereum",
-        "aea add-key ethereum",
-    )
-    for command in commands:
-        command_executor = CommandExecutor(command.split())
+    commands = [
+        ["aea", "generate-key", "ethereum"],
+        ["aea", "add-key", "ethereum"],
+    ]
+    for cmd in commands:
+        command_executor = CommandExecutor(cmd)
         result = command_executor.execute(verbose=True)
         if not result:
-            msg = f"CLI command execution failed: `{command}`"
+            msg = f"CLI command execution failed: {' '.join(cmd)}"
             raise ValueError(msg)
 
     return Path.cwd()
