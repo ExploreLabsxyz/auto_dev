@@ -60,19 +60,19 @@ class ContractScaffolder:
             msg = f"Contract {contract.name} already exists."
             raise ValueError(msg)
 
-        init_cmd = f"aea init --author {self.author} --reset --ipfs --remote"
-        if not CommandExecutor(init_cmd).execute(verbose=verbose, shell=True):
+        init_cmd = ["aea", "init", "--author", self.author, "--reset", "--ipfs", "--remote"]
+        if not CommandExecutor(init_cmd).execute(verbose=verbose):
             msg = "Failed to initialise agent lib."
             raise ValueError(msg)
 
         with isolated_filesystem():
-            create_cmd = "aea create myagent"
-            if not CommandExecutor(create_cmd).execute(verbose=verbose, shell=True):
+            create_cmd = ["aea", "create", "myagent"]
+            if not CommandExecutor(create_cmd).execute(verbose=verbose):
                 msg = "Failed to create agent."
                 raise ValueError(msg)
             os.chdir("myagent")
-            scaffold_cmd = f"aea scaffold contract {contract.name}"
-            if not CommandExecutor(scaffold_cmd).execute(verbose=verbose, shell=True):
+            scaffold_cmd = ["aea", "scaffold", "contract", contract.name]
+            if not CommandExecutor(scaffold_cmd).execute(verbose=verbose):
                 msg = "Failed to scaffold contract."
                 raise ValueError(msg)
 
