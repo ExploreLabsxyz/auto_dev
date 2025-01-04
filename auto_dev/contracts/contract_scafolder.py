@@ -67,8 +67,8 @@ class ContractScaffolder:
 
         with isolated_filesystem():
             create_cmd = ["aea", "create", "myagent"]
-            if not CommandExecutor(create_cmd).execute(verbose=verbose):
-                msg = "Failed to create agent."
+            if not (output := CommandExecutor(create_cmd).execute(verbose=verbose)):
+                msg = f"Failed to create agent.\n{output}"
                 raise ValueError(msg)
             os.chdir("myagent")
             scaffold_cmd = ["aea", "scaffold", "contract", contract.name]
