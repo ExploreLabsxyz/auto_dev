@@ -69,12 +69,9 @@ def test_clean_filesystem():
 def test_packages_filesystem(test_filesystem):
     """Fixture for testing packages."""
     # Initialize packages using autonomy CLI
-    try:
-        command_executor = CommandExecutor(["autonomy", "packages", "init"])
-        if not command_executor.execute(verbose=True):
-            raise ValueError("Failed to initialize packages directory")
-    except (OSError, RuntimeError) as e:
-        raise ValueError(f"Failed to initialize packages directory") from e
+    command_executor = CommandExecutor(["autonomy", "packages", "init"])
+    if not command_executor.execute(verbose=True):
+        raise ValueError("Failed to initialize packages directory")
 
     # Write packages configuration
     with open(AUTONOMY_PACKAGES_FILE, "w", encoding=DEFAULT_ENCODING) as file:
@@ -116,11 +113,6 @@ def dummy_agent_tim(test_filesystem, monkeypatch) -> Path:
         raise ValueError(msg)
 
     # Verify agent directory was created
-    if not agent_dir.exists():
-        msg = f"Agent directory not created at {agent_dir}"
-        raise ValueError(msg)
-
-    agent_dir = Path.cwd() / agent.name
     if not agent_dir.exists():
         msg = f"Agent directory not created at {agent_dir}"
         raise ValueError(msg)
