@@ -163,7 +163,6 @@ class BehaviourScaffolder(ProtocolScaffolder):
 
     def _scaffold_simple_fsm(
         self,
-        target_speech_acts=None,
     ) -> None:
         """Scaffold the simple fsm behaviour from a fsm class."""
 
