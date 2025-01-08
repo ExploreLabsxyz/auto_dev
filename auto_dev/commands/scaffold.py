@@ -31,7 +31,7 @@ from auto_dev.protocols.scaffolder import ProtocolScaffolder
 from auto_dev.behaviours.scaffolder import BehaviourScaffolder
 from auto_dev.connections.scaffolder import ConnectionScaffolder
 from auto_dev.contracts.block_explorer import BlockExplorer
-from auto_dev.commands.scaffold_frontend import frontend  # Register frontend scaffolding command
+# Frontend scaffolding command is registered via scaffold_frontend.py
 from auto_dev.contracts.contract_scafolder import ContractScaffolder
 
 

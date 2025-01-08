@@ -7,7 +7,10 @@ from typing import IO, Optional
 import click
 from click import Context
 
-from auto_dev.commands.scaffold import scaffold
+from auto_dev.base import build_cli
+
+cli = build_cli()
+scaffold = cli.group()(lambda: None)
 
 
 DEFAULT_OPENAPI_SPEC = """openapi: 3.0.0
