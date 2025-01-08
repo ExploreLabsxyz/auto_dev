@@ -10,6 +10,7 @@ nav:
     - Overview: usage.md
     - FSM: fsm.md
     - OpenAPI: openapi.md
+    - Frontend Development: frontend_development.md
   - API Reference:
     - Overview: api/index.md
     - auto_dev: api/auto_dev.md
