@@ -227,13 +227,39 @@ class LoggingScaffolder(BaseScaffolder):
 
 @cli.group()
 def augment() -> None:
-    """Scaffold commands."""
+    """Commands for augmenting project components.
+
+    Available Commands:
+        logging: Add logging handlers to AEA configuration
+        customs: Augment customs components with OpenAPI3 handlers
+    """
 
 
 @augment.command()
 @click.argument("handlers", nargs=-1, type=click.Choice(HANDLERS.keys()), required=True)
 def logging(handlers) -> None:
-    """Augment an aeas logging configuration."""
+    """Augment AEA logging configuration with additional handlers.
+
+    Required Parameters:
+        handlers: One or more handlers to add (console, http, logfile)
+
+    Usage:
+        Add console handler:
+            adev augment logging console
+
+        Add multiple handlers:
+            adev augment logging console http logfile
+
+    Notes
+    -----
+        - Modifies aea-config.yaml logging configuration
+        - Available handlers:
+            - console: Rich console output
+            - http: HTTP POST logging to server
+            - logfile: File-based logging
+        - Each handler can be configured via environment variables
+
+    """
     logger.info(f"Augmenting logging with handlers: {handlers}")
     logging_scaffolder = LoggingScaffolder()
     logging_scaffolder.scaffold(handlers)
@@ -285,7 +311,34 @@ def connection(connections) -> None:
 @click.option("--use-daos", is_flag=True, default=False, help="Augment OpenAPI3 handlers with DAOs")
 @click.pass_context
 def customs(ctx, component_type, auto_confirm, use_daos):
-    """Augment a customs component with OpenAPI3 handlers."""
+    """Augment a customs component with OpenAPI3 handlers.
+
+    Required Parameters:
+        component_type: Type of component to augment (currently only openapi3)
+
+    Optional Parameters:
+        auto_confirm: Skip confirmation prompts. Default: False
+        use_daos: Include DAO integration in handlers. Default: False
+
+    Usage:
+        Basic OpenAPI3 augmentation:
+            adev augment customs openapi3
+
+        With DAO integration:
+            adev augment customs openapi3 --use-daos
+
+        Skip confirmations:
+            adev augment customs openapi3 --auto-confirm
+
+    Notes
+    -----
+        - Requires component.yaml with api_spec field
+        - Generates/updates handlers.py with OpenAPI endpoints
+        - Creates necessary dialogue classes
+        - Optionally adds DAO integration
+        - Shows diff before updating existing handlers
+
+    """
     logger = ctx.obj["LOGGER"]
     logger.info(f"Augmenting {component_type} component")
     verbose = ctx.obj["VERBOSE"]

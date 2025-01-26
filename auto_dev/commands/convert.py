@@ -25,7 +25,19 @@ cli = build_cli(plugins=False)
 
 @cli.group()
 def convert() -> None:
-    """Commands to convert between an agent and a service or vice versa."""
+    """Commands for converting between component types.
+
+    Available Commands:
+        agent_to_service: Convert an autonomous agent into a deployable service
+
+    Notes
+    -----
+        - Handles package type conversion while preserving functionality
+        - Manages dependencies and package structure automatically
+        - Validates components before conversion
+        - Supports Open Autonomy service standards
+
+    """
 
 
 class ConvertCliTool(BasePackageScaffolder):
@@ -116,16 +128,44 @@ class ConvertCliTool(BasePackageScaffolder):
 def agent_to_service(
     agent_public_id: PublicId, service_public_id: PublicId, number_of_agents: int = 1, force: bool = False
 ) -> None:
-    """Convert an agent to a service.
+    """Convert an autonomous agent into a deployable service.
 
-    Args:
-    ----
-        AGENT_PUBLIC_ID: The public id of the agent.
-        SERVICE_PUBLIC_ID: The public id of the service to be converted to.
+    Required Parameters:
+        agent_public_id: Public ID of the source agent (author/name format)
+        service_public_id: Public ID for the target service (author/name format)
 
-    Example:
-    -------
-        adev convert AGENT_PUBLIC_ID SERVICE_PUBLIC_ID
+    Optional Parameters:
+        number_of_agents: Number of agent instances in the service. Default: 1
+        force: Overwrite existing service if it exists. Default: False
+
+    Usage:
+        Basic conversion:
+            adev convert agent-to-service author/my_agent author/my_service
+
+        With multiple agent instances:
+            adev convert agent-to-service author/my_agent author/my_service --number_of_agents 3
+
+        Force overwrite existing:
+            adev convert agent-to-service author/my_agent author/my_service --force
+
+    Notes
+    -----
+        - Prerequisites:
+            - Agent must exist in packages directory
+            - Agent and service public IDs must be valid
+        - Package Structure:
+            - Creates service in packages/<author>/services/<name>
+            - Follows Open Autonomy service structure
+        - Configuration:
+            - Copies agent configuration and dependencies
+            - Sets up service-specific overrides
+            - Configures number of agent instances
+            - Includes network and deployment settings
+        - Validation:
+            - Checks agent existence and structure
+            - Validates service creation path
+            - Verifies configuration compatibility
+        - Use --force to overwrite an existing service
 
     """
     logger.info(f"Converting agent {agent_public_id} to service {service_public_id}.")

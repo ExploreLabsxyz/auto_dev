@@ -110,11 +110,30 @@ def release(
     dep_path: Path,
     verbose: bool = False,
 ) -> None:
-    """We release the package.
-    Automaticaly bump the version and create a new tag.
-    Push the tag to github.
-    Push the branch to github.
-    This will trigger a github action to publish the package to pypi.
+    """Release a new version of the package.
+
+    Optional Parameters:
+        dep_path: Path to the dependency file (pyproject.toml). Default: pyproject.toml
+        verbose: Enable verbose output. Default: False
+
+    Usage:
+        Release with default settings:
+            adev release
+
+        Release with custom dependency file:
+            adev release -p ./custom/pyproject.toml
+
+        Release with verbose output:
+            adev release --verbose
+
+    Notes
+    -----
+        - Automatically bumps version and creates a new tag
+        - Pushes tag and branch to GitHub
+        - Triggers GitHub action to publish to PyPI
+        - Requires clean git working tree
+        - Will prompt for confirmation before proceeding
+
     """
     logger = ctx.obj["LOGGER"]
     logger.info("Releasing the package... 🚀")

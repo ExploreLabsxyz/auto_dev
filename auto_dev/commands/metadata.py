@@ -91,7 +91,12 @@ def get_metadata(root, name, hash_, target_id):
 
 @cli.group()
 def metadata() -> None:
-    """Commands for generating and printing metadata."""
+    """Commands for generating and managing package metadata.
+
+    Available Commands:
+        generate: Generate metadata JSON files for packages.
+        validate: Validate existing metadata files.
+    """
 
 
 # we make a command called generate
@@ -124,10 +129,33 @@ def metadata() -> None:
     default=False,
 )
 def generate(root, target_name, target_id, strict, all) -> None:  # pylint: disable=redefined-builtin
-    """Generate metadata for a package.
+    """Generate metadata JSON files for packages.
 
-    example usage:
-         python ./metadata.py generate . contract/eightballer/cool_skill/0.1.0 01
+    Required Parameters:
+        root: Path to root directory containing packages.json. Default: current directory
+        target_name: Name of the package to generate metadata for (e.g., contract/author/name/version)
+        target_id: Identifier for the metadata file (used in output filename)
+
+    Optional Parameters:
+        strict: Enable strict validation of metadata. Default: False
+        all: Generate metadata for all packages. Default: False
+
+    Usage:
+        Generate for specific package:
+            adev metadata generate . contract/author/package/0.1.0 01
+
+        Generate for all packages:
+            adev metadata generate . contract/author/package/0.1.0 01 --all
+
+        Generate with strict validation:
+            adev metadata generate . contract/author/package/0.1.0 01 --strict
+
+    Notes
+    -----
+        - Reads package information from packages.json
+        - Generates metadata files in mints/<target_id>.json
+        - Strict mode enforces additional validation
+        - Can process single package or all packages
 
     """
     if not target_id and not all:
@@ -234,7 +262,24 @@ def build_dependency_tree_for_component(component) -> list[str]:
 )
 @click.pass_context
 def validate(ctx, metadata_file) -> None:
-    """Print metadata for a package."""
+    """Validate metadata files for packages.
+
+    Required Parameters:
+        metadata_file: Path to the metadata JSON file to validate
+
+    Usage:
+        Validate a metadata file:
+            adev metadata validate mints/01.json
+
+    Notes
+    -----
+        - Validates the metadata file format and content
+        - Checks if all dependencies are minted
+        - Verifies component status in mapping.txt
+        - Displays detailed validation results with verbose flag
+        - Exits with error if validation fails
+
+    """
     verbose = ctx.obj["VERBOSE"]
     metadata = read_json_file(metadata_file)
     valid = render_metadata(metadata, verbose=verbose)

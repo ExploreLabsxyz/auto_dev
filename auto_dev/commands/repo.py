@@ -180,7 +180,12 @@ class RepoScaffolder:
 # We create a new command group
 @cli.group()
 def repo() -> None:
-    """Repository management commands."""
+    """Repository management commands.
+
+    Available Commands:
+        scaffold: Create and initialize a new repository with template files
+        update_deps: Update and lock repository dependencies
+    """
 
 
 @repo.command()
@@ -192,7 +197,42 @@ def repo() -> None:
 @click.option("--initial-commit/--no-commit", is_flag=True, help="Add the initial commit. Requires git", default=True)
 @click.pass_context
 def scaffold(ctx, name, type_of_repo, force, auto_approve, install, initial_commit) -> None:
-    """Create a new repo and scaffold necessary files."""
+    """Create a new repository and scaffold necessary files.
+
+    Required Parameters:
+        name: Name of the repository to create
+
+    Optional Parameters:
+        type_of_repo: Type of repository to scaffold (autonomy, python). Default: autonomy
+        force: Overwrite existing repository if it exists. Default: False
+        auto_approve: Skip confirmation prompts. Default: False
+        install: Install dependencies after scaffolding. Default: True
+        initial_commit: Create initial git commit. Default: True
+
+    Usage:
+        Create basic autonomy repo:
+            adev repo scaffold my_repo
+
+        Create Python repo:
+            adev repo scaffold my_repo -t python
+
+        Force overwrite existing repo:
+            adev repo scaffold my_repo -f
+
+        Skip dependency installation:
+            adev repo scaffold my_repo --no-install
+
+    Notes
+    -----
+        - Creates a new git repository in the specified directory
+        - For autonomy repos:
+            - Installs host dependencies via install.sh
+            - Initializes autonomy packages
+        - For Python repos:
+            - Creates src directory with __init__.py
+            - Adds sample main.py and cli.py files
+
+    """
     logger = ctx.obj["LOGGER"]
     verbose = ctx.obj["VERBOSE"]
     logger.info(f"Creating a new {type_of_repo} repo.")
@@ -308,7 +348,27 @@ def update_against_version_set(logger, dry_run: bool = False) -> list[str]:
 )
 @click.pass_context
 def update_deps(ctx, lock: bool) -> None:
-    """Update dependencies in the current repo."""
+    """Update and lock repository dependencies.
+
+    Optional Parameters:
+        lock: Lock dependencies after updating. Default: False
+
+    Usage:
+        Update dependencies:
+            adev repo update-deps
+
+        Update and lock dependencies:
+            adev repo update-deps --lock
+
+    Notes
+    -----
+        - Updates dependencies in packages.json
+        - Optionally locks dependency versions
+        - Checks for changes in dependency files
+        - Prompts to commit changes if detected
+        - Exits with error if uncommitted changes exist
+
+    """
     logger = ctx.obj["LOGGER"]
     verbose = ctx.obj["VERBOSE"]
     # We read in the pyproject.toml file
