@@ -22,16 +22,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get current version
+        id: current_version
+        run: |
+          echo "VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)" >> $GITHUB_OUTPUT
+
       - name: Generate Changelog
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          version-file: './pyproject.toml'
           version-path: 'tool.poetry.version'
+          fallback-version: ${{ steps.current_version.outputs.VERSION }}
           git-message: 'chore(release): {version}'
           preset: 'angular'
           tag-prefix: 'v'
           release-count: 0
+          skip-version-file: false
+          skip-commit: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
