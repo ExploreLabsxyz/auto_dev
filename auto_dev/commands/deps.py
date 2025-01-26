@@ -624,6 +624,9 @@ def verify(
 
     Optional Parameters:
         auto_approve: Skip confirmation prompts for updates. Default: False
+            - Automatically applies all updates
+            - No interactive prompts
+            - Use with caution in production
 
     Usage:
         Verify with prompts:
@@ -634,12 +637,35 @@ def verify(
 
     Notes
     -----
-        - Requires GITHUB_TOKEN environment variable to be set
-        - Checks both autonomy and poetry dependencies
-        - Verifies against specified version sets
-        - Can automatically update dependencies if approved
-        - Updates packages.json and pyproject.toml as needed
+        - Authentication:
+            - Requires GITHUB_TOKEN environment variable
+            - Token needs repo and packages read access
+            - Can be generated at github.com/settings/tokens
 
+        - Verification Process:
+            - Checks both autonomy and poetry dependencies
+            - Verifies against specified version sets
+            - Compares local vs remote package hashes
+            - Validates dependency compatibility
+
+        - Update Process:
+            - Updates packages.json for autonomy packages
+            - Updates pyproject.toml for poetry dependencies
+            - Handles dependency resolution
+            - Maintains version consistency
+
+        - Features:
+            - Parallel version checking
+            - Detailed diff viewing
+            - Selective update approval
+            - Dependency tree analysis
+            - Version conflict detection
+
+        - Best Practices:
+            - Run before deployments
+            - Include in CI/CD pipelines
+            - Regular scheduled verification
+            - Version pinning enforcement
     """
 
     if not os.getenv("GITHUB_TOKEN"):

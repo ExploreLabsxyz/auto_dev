@@ -34,9 +34,18 @@ def test(ctx, path, watch, coverage_report) -> None:
     """Run tests for packages.
 
     Optional Parameters:
-        path: Path to directory to test. Tests all packages if not provided. Default: None
+        path: Path to directory to test. Default: None
+            - If not provided, tests all packages
+            - Must be a valid directory containing tests
+            - Can be package root or specific test directory
         watch: Watch files for changes and re-run tests. Default: False
+            - Monitors file changes in real-time
+            - Re-runs tests when files are modified
+            - Useful for test-driven development
         coverage_report: Generate test coverage report. Default: True
+            - Creates detailed coverage analysis
+            - Shows line-by-line coverage stats
+            - Generates HTML report for visualization
 
     Usage:
         Test all packages:
@@ -53,6 +62,23 @@ def test(ctx, path, watch, coverage_report) -> None:
 
         Test specific directory with watching:
             adev test -p ./my_package -w
+
+    Notes
+    -----
+        - Test Framework:
+            - Uses pytest as test runner
+            - Supports fixtures and markers
+            - Handles async tests
+        - Coverage:
+            - Tracks line and branch coverage
+            - Excludes test files from coverage
+            - Sets minimum coverage thresholds
+        - Features:
+            - Parallel test execution
+            - JUnit XML reports
+            - Integration with CI/CD
+            - Detailed failure reporting
+            - Test categorization with markers
     """
     verbose = ctx.obj["VERBOSE"]
     click.echo(

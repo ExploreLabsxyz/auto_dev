@@ -1,21 +1,22 @@
-name: CI/CD Pipeline
+# Publish package on main branch if it's tagged with 'v*'
 
+name: Release & Documentation Workflow
+
+# Controls when the action will run.
 on:
+  # Triggers the workflow on push events but only for the master branch
   push:
-    branches:
-      - main
     tags:
       - 'v*'
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-and-deploy-docs:
-    if: github.ref == 'refs/heads/main'
     environment: github-pages
     runs-on: ubuntu-latest
     steps:
@@ -50,41 +51,34 @@ jobs:
         with:
           path: site
 
+  deploy-docs:
+    needs: build-and-deploy-docs
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
   release:
+    needs: build-and-deploy-docs
     if: startsWith(github.ref, 'refs/tags/v')
-    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Get version from tag
         id: tag_name
         run: |
-          echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
+          echo "current_version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
         shell: bash
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Generate Changelog
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          version-file: './package.json,./pyproject.toml'
-          git-message: 'chore(release): {version}'
-          preset: 'angular'
-          tag-prefix: 'v'
-          output-file: 'CHANGELOG.md'
-          release-count: 0
-          skip-version-file: true
-          skip-commit: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -100,19 +94,16 @@ jobs:
       - name: Build wheels and source tarball
         run: poetry build
 
-      - name: Create GitHub release
-        id: create_release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
-          body: ${{ steps.changelog.outputs.clean_changelog }}
-          files: |
-            dist/*.whl
-            dist/*.tar.gz
-            CHANGELOG.md
+          generate_release_notes: true
+          files: dist/*
           draft: false
           prerelease: false
+          name: Release ${{ steps.tag_name.outputs.current_version }}
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

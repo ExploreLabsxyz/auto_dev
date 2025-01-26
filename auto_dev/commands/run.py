@@ -323,9 +323,11 @@ def run(ctx, agent_public_id: PublicId, verbose: bool, force: bool, fetch: bool)
             If not provided, uses the current directory's agent.
 
     Optional Parameters:
-        verbose: Enable verbose logging. Default: False
-        force: Force overwrite if agent exists. Default: False
-        fetch: Whether to fetch from registry or use local package. Default: True
+        verbose: Enable verbose logging. Shows detailed output during execution. Default: False
+        force: Force overwrite if agent exists locally. Default: False
+        fetch: Whether to fetch agent from registry or use local package. Default: True
+            - If True: Fetches agent from local registry
+            - If False: Uses agent from current directory or packages
 
     Usage:
         Run from registry:
@@ -342,6 +344,18 @@ def run(ctx, agent_public_id: PublicId, verbose: bool, force: bool, fetch: bool)
 
         Run from current directory:
             adev run
+
+    Notes
+    -----
+        - Automatically handles:
+            - Agent setup and key generation
+            - Dependency installation
+            - Certificate management
+            - Tendermint node management
+        - Requires Docker for Tendermint
+        - Validates agent configuration
+        - Supports multiple blockchain networks
+        - Can run agents in development or production mode
     """
     if not agent_public_id:
         # We set fetch to false if the agent is not provided, as we assume the user wants to run the agent locally.

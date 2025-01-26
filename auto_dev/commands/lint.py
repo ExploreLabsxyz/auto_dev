@@ -39,8 +39,14 @@ def lint(ctx, path, changed_only) -> None:
     """Run linting checks on code.
 
     Optional Parameters:
-        path: Path to code to lint. If not provided will lint all packages. Default: None
+        path: Path to code to lint. Default: None
+            - If not provided, lints all packages
+            - Can be file or directory path
+            - Must exist in workspace
         changed_only: Only lint files that have changed. Default: False
+            - Uses git to detect changes
+            - Only lints files with uncommitted changes
+            - Ignores untracked files
 
     Usage:
         Lint all packages:
@@ -57,6 +63,30 @@ def lint(ctx, path, changed_only) -> None:
 
         Lint with verbose output:
             adev lint -v
+
+    Notes
+    -----
+        - Linting Tools:
+            - ruff: Fast Python linter
+            - pylint: Comprehensive code analysis
+            - mypy: Static type checking
+            - bandit: Security checks
+        - Features:
+            - Parallel linting for performance
+            - Configurable via pyproject.toml
+            - Auto-fixes for common issues
+            - Detailed error reporting
+            - Custom rule configuration
+        - Integration:
+            - Works with pre-commit hooks
+            - CI/CD pipeline support
+            - Editor/IDE integration
+            - Custom plugin support
+        - Configuration:
+            - Severity levels customization
+            - Rule enabling/disabling
+            - File/directory exclusions
+            - Line length settings
     """
     logger = ctx.obj["LOGGER"]
     verbose = ctx.obj["VERBOSE"]

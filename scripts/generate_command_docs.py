@@ -63,9 +63,7 @@ class DocTemplates:
 adev {command_name} [OPTIONS] [ARGS]
 ```
 
-## Options
-
-The command supports various options that can be viewed using:
+Additionally, you can view the parameters for the command using:
 ```bash
 adev {command_name} --help
 ```
