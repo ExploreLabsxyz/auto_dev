@@ -27,7 +27,25 @@ cli = build_cli()
 )
 @click.pass_context
 def fmt(ctx, path, changed_only) -> None:
-    """Runs the formatting tooling."""
+    """Format code using the configured formatters.
+
+    Optional Parameters:
+        path: Path to code to format. If not provided will format all packages. Default: None
+        changed_only: Only format files that have changed. Default: False
+
+    Usage:
+        Format all packages:
+            adev fmt
+
+        Format specific path:
+            adev fmt -p ./my_package
+
+        Format only changed files:
+            adev fmt --changed-only
+
+        Format specific path and only changed files:
+            adev fmt -p ./my_package --changed-only
+    """
     verbose = ctx.obj["VERBOSE"]
     num_processes = ctx.obj["NUM_PROCESSES"]
     logger = ctx.obj["LOGGER"]

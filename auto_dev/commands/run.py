@@ -318,9 +318,30 @@ class AgentRunner:
 def run(ctx, agent_public_id: PublicId, verbose: bool, force: bool, fetch: bool) -> None:
     """Run an agent from the local packages registry or a local path.
 
-    Example usage:
-        adev run eightballer/my_agent  # Fetch and run from registry
-        adev run eightballer/my_agent --no-fetch  # Run local agent package named my_agent
+    Required Parameters:
+        agent_public_id: The public ID of the agent (author/name format).
+            If not provided, uses the current directory's agent.
+
+    Optional Parameters:
+        verbose: Enable verbose logging. Default: False
+        force: Force overwrite if agent exists. Default: False
+        fetch: Whether to fetch from registry or use local package. Default: True
+
+    Usage:
+        Run from registry:
+            adev run eightballer/my_agent
+
+        Run local agent:
+            adev run eightballer/my_agent --no-fetch
+
+        Run with verbose output:
+            adev run eightballer/my_agent -v
+
+        Run with force overwrite:
+            adev run eightballer/my_agent --force
+
+        Run from current directory:
+            adev run
     """
     if not agent_public_id:
         # We set fetch to false if the agent is not provided, as we assume the user wants to run the agent locally.

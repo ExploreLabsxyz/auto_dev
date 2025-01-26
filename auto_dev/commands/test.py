@@ -1,6 +1,5 @@
 """Test command cli module."""
 
-
 import rich_click as click
 from rich.progress import track
 
@@ -32,7 +31,29 @@ cli = build_cli()
 @click.option("-c", "--coverage-report", help="Run the coverage report", is_flag=True, default=True)
 @click.pass_context
 def test(ctx, path, watch, coverage_report) -> None:
-    """Runs the test tooling."""
+    """Run tests for packages.
+
+    Optional Parameters:
+        path: Path to directory to test. Tests all packages if not provided. Default: None
+        watch: Watch files for changes and re-run tests. Default: False
+        coverage_report: Generate test coverage report. Default: True
+
+    Usage:
+        Test all packages:
+            adev test
+
+        Test specific directory:
+            adev test -p ./my_package
+
+        Test with file watching:
+            adev test -w
+
+        Test without coverage report:
+            adev test --no-coverage-report
+
+        Test specific directory with watching:
+            adev test -p ./my_package -w
+    """
     verbose = ctx.obj["VERBOSE"]
     click.echo(
         f"Testing path: `{path or 'All dev packages/packages.json'}` ⌛",

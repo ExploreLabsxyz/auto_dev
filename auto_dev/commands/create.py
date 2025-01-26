@@ -43,11 +43,30 @@ available_agents = get_available_agents()
 def create(ctx, public_id: str, template: str, force: bool, publish: bool, clean_up: bool) -> None:
     """Create a new agent from a template.
 
-    :param public_id: the public_id of the agent in the open-autonmy format i.e. `author/agent`
-    :flag  template: the template to use.
+    Required Parameters:
+        public_id: The public ID of the agent (author/name format).
+        template: The template to use for agent creation.
 
-    example usage:
-        `adev create -t eightballer/frontend_agent new_author/new_agent`
+    Optional Parameters:
+        force: Force overwrite if agent exists. Default: False
+        publish: Whether to publish to local registry after creation. Default: True
+        clean_up: Whether to clean up temporary files after creation. Default: True
+
+    Usage:
+        Create with default template:
+            adev create new_author/new_agent
+
+        Create from specific template:
+            adev create -t eightballer/frontend_agent new_author/new_agent
+
+        Create with force overwrite:
+            adev create -f new_author/new_agent
+
+        Create without publishing:
+            adev create --no-publish new_author/new_agent
+
+        Create without cleanup:
+            adev create --no-clean-up new_author/new_agent
     """
     agent_name = public_id.name
     verbose = ctx.obj["VERBOSE"]

@@ -2,26 +2,36 @@ site_name: auto_dev
 site_url: https://8ball030.github.io/auto_dev
 repo_url: https://github.com/8ball030/auto_dev
 repo_name: 8ball030/auto_dev
+hooks:
+  - docs/hooks.py
 #strict: true
 nav:
   - Home: index.md
+  
   - Installation: installation.md
+  - Contributing: contributing.md
+  
   - Usage: 
     - Overview: usage.md
     - FSM: fsm.md
     - OpenAPI: openapi.md
-  - API Reference:
-    - Overview: api/index.md
-    - auto_dev: api/auto_dev.md
-    - Commands: api/commands.md
-    - Connections: api/connections.md
-    - Contracts: api/contracts.md
-    - FSM: api/fsm.md
-    - Handler: api/handler.md
-    - Protocols: api/protocols.md
-    - Utils: api/utils.md
-    - Constants: api/constants.md
-  - Contributing: contributing.md
+    - DAO: dao.md
+  - Commands:
+    - run: commands/run.md
+    - create: commands/create.md
+    - lint: commands/lint.md
+    - publish: commands/publish.md
+    - test: commands/test.md
+    - improve: commands/improve.md
+    - release: commands/release.md
+    - metadata: commands/metadata.md
+    - fmt: commands/fmt.md
+    - scaffold: commands/scaffold.md
+    - deps: commands/deps.md
+    - convert: commands/convert.md
+    - repo: commands/repo.md
+    - fsm: commands/fsm.md
+    - augment: commands/augment.md
   - Changelog: changelog.md
 theme:
   name: material
@@ -103,6 +113,25 @@ plugins:
             show_source: false
             show_submodules: true
             docstring_style: sphinx
+            members: true
+            show_if_no_docstring: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            merge_init_into_class: false
+            docstring_section_style: list
+            show_root_members: true
+            show_object_full_path: false
+            show_category_heading: false
+            show_bases: false
+            show_docstring_attributes: false
+            show_docstring_description: true
+            show_docstring_examples: true
+            show_docstring_other_parameters: false
+            show_docstring_parameters: true
+            show_docstring_raises: false
+            show_docstring_returns: false
+            show_docstring_warns: false
+            show_docstring_yields: false
 extra_css:
   - stylesheets/extra.css
 extra:

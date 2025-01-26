@@ -36,7 +36,28 @@ cli = build_cli()
 )
 @click.pass_context
 def lint(ctx, path, changed_only) -> None:
-    """Runs the linting tooling."""
+    """Run linting checks on code.
+
+    Optional Parameters:
+        path: Path to code to lint. If not provided will lint all packages. Default: None
+        changed_only: Only lint files that have changed. Default: False
+
+    Usage:
+        Lint all packages:
+            adev lint
+
+        Lint specific path:
+            adev lint -p ./my_package
+
+        Lint only changed files:
+            adev lint --changed-only
+
+        Lint specific path and only changed files:
+            adev lint -p ./my_package --changed-only
+
+        Lint with verbose output:
+            adev lint -v
+    """
     logger = ctx.obj["LOGGER"]
     verbose = ctx.obj["VERBOSE"]
     num_processes = ctx.obj["NUM_PROCESSES"]

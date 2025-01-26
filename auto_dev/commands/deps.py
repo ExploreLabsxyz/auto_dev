@@ -266,8 +266,11 @@ def deps(
     ctx: click.Context,  # noqa
 ) -> None:
     """Commands for managing dependencies.
-    - update: Update both the packages.json from the parent repo and the packages in the child repo.
-    - generate_gitignore: Generate the gitignore file from the packages.json file.
+
+    Available Commands:
+        update: Update packages.json from parent repo and packages in child repo.
+        generate_gitignore: Generate .gitignore entries from packages.json.
+        verify: Verify dependencies against version set and update if needed.
     """
 
 
@@ -314,9 +317,26 @@ def update(
     auto_confirm: bool = False,
     manual: bool = False,
 ) -> None:
-    """We update aea packages.json dependencies from a parent repo.
-    Example usage:
-        adev deps update -p /path/to/parent/repo -c /path/to/child/repo.
+    """Update dependencies from parent repo to child repo.
+
+    Required Parameters:
+        parent_repo: Path to the parent repository containing source packages.json.
+        child_repo: Path to the child repository to update.
+
+    Optional Parameters:
+        location: Location of dependencies (local or remote). Default: local
+        auto_confirm: Skip confirmation prompts. Default: False
+        manual: Enable manual mode for updates. Default: False
+
+    Usage:
+        Update with defaults:
+            adev deps update -p /path/to/parent -c /path/to/child
+
+        Auto-confirm updates:
+            adev deps update -p /path/to/parent -c /path/to/child --auto-confirm
+
+        Manual mode:
+            adev deps update -p /path/to/parent -c /path/to/child --manual
     """
     logger = ctx.obj["LOGGER"]
     logger.info("Updating the dependencies... 📝")
@@ -342,9 +362,20 @@ def update(
 def generate_gitignore(
     ctx: click.Context,
 ) -> None:
-    """We generate the gitignore file from the packages.json file
-    Example usage:
-        adev deps generate_gitignore.
+    """Generate .gitignore entries from packages.json.
+
+    Reads the packages.json file and adds any third-party package paths
+    to the .gitignore file if they're not already present.
+
+    Usage:
+        adev deps generate-gitignore
+
+    Notes
+    -----
+        - Only adds new entries, doesn't remove existing ones
+        - Focuses on third-party packages from packages.json
+        - Appends entries to existing .gitignore file
+
     """
     package_dict = get_package_json(repo=Path())
     third_party_packages = package_dict.get("third_party", {})
@@ -589,12 +620,26 @@ def verify(
     ctx: click.Context,
     auto_approve: bool = False,
 ) -> None:
-    """Verify the packages.json file.
+    """Verify and optionally update package dependencies.
 
-    Requires GITHUB_TOKEN env variable to be set.
+    Optional Parameters:
+        auto_approve: Skip confirmation prompts for updates. Default: False
 
-    Example usage:
-        adev deps verify
+    Usage:
+        Verify with prompts:
+            adev deps verify
+
+        Auto-approve updates:
+            adev deps verify --auto-approve
+
+    Notes
+    -----
+        - Requires GITHUB_TOKEN environment variable to be set
+        - Checks both autonomy and poetry dependencies
+        - Verifies against specified version sets
+        - Can automatically update dependencies if approved
+        - Updates packages.json and pyproject.toml as needed
+
     """
 
     if not os.getenv("GITHUB_TOKEN"):

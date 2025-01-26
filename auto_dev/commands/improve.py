@@ -49,7 +49,36 @@ cli = build_cli()
 )
 @click.pass_context
 def improve(ctx, path, type_of_repo, author, name, yes) -> None:
-    """Improves downstream repos by verifying the context of scaffolded files."""
+    """Verify and improve repository structure and files.
+
+    Required Parameters:
+        type_of_repo: Type of repository to verify (autonomy, python)
+        author: Author of the repository
+        name: Name of the repository
+
+    Optional Parameters:
+        path: Path to repository to verify. Default: current directory
+        yes: Auto-confirm all prompts. Default: False
+
+    Usage:
+        Verify current directory:
+            adev improve -t autonomy --author myname --name myrepo
+
+        Verify specific path:
+            adev improve -p /path/to/repo -t autonomy --author myname --name myrepo
+
+        Auto-confirm fixes:
+            adev improve -t autonomy --author myname --name myrepo -y
+
+    Notes
+    -----
+        - Verifies repository structure against template
+        - Shows detailed verification results
+        - Can automatically fix differences if confirmed
+        - Reports pass/fail/modified/skipped counts
+        - Exits with error if files are modified or verification fails
+
+    """
     if path is None:
         path = Path.cwd()
     os.chdir(path)
