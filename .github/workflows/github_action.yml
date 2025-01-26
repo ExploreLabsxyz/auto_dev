@@ -56,6 +56,8 @@ jobs:
           release-count: 0
           skip-version-file: false
           skip-commit: false
+          create-summary: true
+          output-file: "CHANGELOG.md"
 
       - name: Set up Python
         uses: actions/setup-python@v5
