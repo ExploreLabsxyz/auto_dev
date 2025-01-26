@@ -27,7 +27,7 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version-file: './package.json,./pyproject.toml'
+          version-file: './pyproject.toml'
           git-message: 'chore(release): {version}'
           preset: 'angular'
           tag-prefix: 'v'
