@@ -89,6 +89,5 @@ max-returns = 6
 max-statements = 50
 
 
-
 [lint.pyupgrade]
 keep-runtime-typing = true
