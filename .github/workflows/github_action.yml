@@ -18,12 +18,6 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - name: Get version from tag
-        id: tag_name
-        run: |
-          echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
-        shell: bash
-
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -39,8 +33,9 @@ jobs:
           tag-prefix: 'v'
           output-file: 'CHANGELOG.md'
           release-count: 0
-          skip-version-file: true
-          skip-commit: true
+          skip-version-file: false
+          skip-commit: false
+          skip-tag: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -62,9 +57,11 @@ jobs:
       - name: Create GitHub release
         id: create_release
         uses: softprops/action-gh-release@v1
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          tag_name: v${{ steps.changelog.outputs.version }}
           body: ${{ steps.changelog.outputs.clean_changelog }}
           files: |
             dist/*.whl
