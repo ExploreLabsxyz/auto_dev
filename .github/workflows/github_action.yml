@@ -27,15 +27,11 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version-file: './pyproject.toml'
+          version-path: 'tool.poetry.version'
           git-message: 'chore(release): {version}'
           preset: 'angular'
           tag-prefix: 'v'
-          output-file: 'CHANGELOG.md'
           release-count: 0
-          skip-version-file: false
-          skip-commit: false
-          skip-tag: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
