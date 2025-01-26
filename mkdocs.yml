@@ -2,15 +2,15 @@ site_name: auto_dev
 site_url: https://8ball030.github.io/auto_dev
 repo_url: https://github.com/8ball030/auto_dev
 repo_name: 8ball030/auto_dev
-hooks:
-  - docs/hooks.py
 #strict: true
+
+hooks:
+  - scripts/generate_command_docs.py
+
+# Optimized navigation structure
 nav:
   - Home: index.md
-  
   - Installation: installation.md
-  - Contributing: contributing.md
-  
   - Usage: 
     - Overview: usage.md
     - FSM: fsm.md
@@ -32,18 +32,14 @@ nav:
     - repo: commands/repo.md
     - fsm: commands/fsm.md
     - augment: commands/augment.md
+  - Contributing: contributing.md
   - Changelog: changelog.md
+
 theme:
   name: material
   language: en
   #logo: assets/logo.png
   palette:
-    # Automatic mode
-    - media: "(prefers-color-scheme)"
-      toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
-    # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
       accent: blue
@@ -51,87 +47,67 @@ theme:
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
-    # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       accent: blue
       primary: blue_grey
       toggle:
         icon: material/weather-sunny
-        name: Switch to system preference
+        name: Switch to light mode
   font:
     code: Roboto Mono
     text: Source Sans Pro
   features:
-    - navigation.indexes
     - navigation.instant
-    - navigation.tabs.sticky
     - navigation.expand
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
     - content.code.copy
+    - content.tabs.link
+
 markdown_extensions:
-  - pymdownx.emoji
-  - pymdownx.critic
-  - pymdownx.caret
-  - pymdownx.mark
-  - pymdownx.tilde
-  - pymdownx.tabbed
-  - attr_list
-  - pymdownx.arithmatex:
-      generic: true
   - pymdownx.highlight:
-      linenums: false
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.superfences
   - pymdownx.inlinehilite
-  - pymdownx.details
   - admonition
   - toc:
-      baselevel: 3
       permalink: true
-      slugify: !!python/name:pymdownx.slugs.uslugify
-  - meta
-  - pymdownx.superfences:
-        # make exceptions to highlighting of code:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid_custom
+      toc_depth: 3
+      baselevel: 1
+  - attr_list
+  - pymdownx.snippets:
+      base_path: .
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true 
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+
 plugins:
+  - search
   - include-markdown
-  - search:
-      lang: en
-  - autorefs
   - mkdocstrings:
       default_handler: python
       handlers:
         python:
-          paths: [auto_dev]
-          options:
+          selection:
+            docstring_style: sphinx
+          rendering:
             show_root_heading: true
             show_source: false
-            show_submodules: true
-            docstring_style: sphinx
-            members: true
-            show_if_no_docstring: true
             show_signature_annotations: true
-            signature_crossrefs: true
-            merge_init_into_class: false
+            members_order: source
             docstring_section_style: list
-            show_root_members: true
-            show_object_full_path: false
-            show_category_heading: false
-            show_bases: false
-            show_docstring_attributes: false
-            show_docstring_description: true
-            show_docstring_examples: true
-            show_docstring_other_parameters: false
-            show_docstring_parameters: true
-            show_docstring_raises: false
-            show_docstring_returns: false
-            show_docstring_warns: false
-            show_docstring_yields: false
+          paths: [auto_dev]
+
 extra_css:
   - stylesheets/extra.css
 extra:

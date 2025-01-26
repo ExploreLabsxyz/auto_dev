@@ -179,6 +179,11 @@ class CommandDocGenerator:
 def main() -> None:
     """Generate documentation for all commands."""
     docs_dir = Path("docs/commands")
+    assets_dir = Path("docs/assets")
+
+    # Preserve assets directory if it exists
+    if assets_dir.exists():
+        logger.info("Preserving existing docs/assets directory")
     try:
         docs_dir.mkdir(parents=True, exist_ok=True)
     except OSError as e:
